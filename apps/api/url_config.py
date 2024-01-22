@@ -1,0 +1,7 @@
+PREFIX_LINK = '/api/v1'
+MENUS_LINK = '/menus/'
+MENU_LINK = '/menus/{menu_id}/'
+SUBMENUS_LINK = '/menus/{menu_id}/submenus/'
+SUBMENU_LINK = '/menus/{menu_id}/submenus/{submenu_id}/'
+DISHES_LINK = '/menus/{menu_id}/submenus/{submenu_id}/dishes/'
+DISH_LINK = '/menus/{menu_id}/submenus/{submenu_id}/dishes/{dish_id}/'
