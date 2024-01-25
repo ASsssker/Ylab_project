@@ -5,32 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76ac7666-8947-4451-b377-94a5c33ccacd" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.env.db" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/YLab_project.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/api/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/api/dish_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/api/main_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/api/menu_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/api/submenu_api.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/api/url_config.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/dish_crud.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/menu_crud.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/schema.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/submenu_crud.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/apps/menu/utils.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/db/db_init.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,6 +21,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
@@ -67,21 +45,9 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "master",
     "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "preferences.pluginManager"
+    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
   }
 }]]></component>
-  <component name="QodanaHighlightedReportService">
-    <option name="localRunNotPublishedPersistedInfo">
-      <LocalReportPersistedInfo>
-        <option name="path" value="/tmp/qodana_output/qodana.sarif.json" />
-        <option name="reportGuid" value="7aeb3c26-47e2-4420-b648-d4af9b66bc76" />
-        <option name="reportName" value="YLab_project/qodana/2024-01-22" />
-      </LocalReportPersistedInfo>
-    </option>
-  </component>
-  <component name="QodanaIsSelectedPersistenceService">
-    <option name="selectedOrLoading" value="true" />
-  </component>
   <component name="QodanaReportsService">
     <option name="descriptions">
       <ReportDescription localRun="true" path="/tmp/qodana_output/qodana.sarif.json" reportGuid="7aeb3c26-47e2-4420-b648-d4af9b66bc76" reportId="YLab_project/qodana/2024-01-22" />
