@@ -1,3 +1,4 @@
+from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase
 from settings import db_settings
@@ -17,7 +18,7 @@ AsyncSessionLocale = async_sessionmaker(
 )
 
 
-async def get_db():
+async def get_session() -> AsyncGenerator[AsyncSession, None]:
     """Возвращает сессию с базой данных."""
     async with AsyncSessionLocale() as async_session:
         yield async_session

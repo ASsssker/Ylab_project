@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from uuid import UUID
 
@@ -9,12 +9,10 @@ class Base(BaseModel):
 
 
 class MenuRead(Base):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     submenus_count: int = 0
     dishes_count: int = 0
-
-    class Config:
-        orm_mode = True
 
 
 class MenuCreate(Base):
@@ -27,12 +25,10 @@ class MenuUpdate(Base):
 
 
 class SubmenuRead(Base):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     menu_id: UUID
     dishes_count: int = 0
-
-    class Config:
-        orm_mode = True
 
 
 class SubmenuCreate(Base):
@@ -45,12 +41,10 @@ class SubmenuUpdate(Base):
 
 
 class DishRead(Base):
+    model_config = ConfigDict(from_attributes=True)
     id: UUID
     submenu_id: UUID
     price: Decimal
-
-    class Config:
-        orm_mode = True
 
 
 class DishCreate(Base):

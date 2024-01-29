@@ -2,7 +2,7 @@ from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import FlushError, NoResultFound
-from db.db_init import get_db
+from db.db_init import get_session
 from uuid import UUID
 from .utils import check_unique, check_exist_and_return
 from .models import Dish
@@ -10,7 +10,7 @@ from .schema import DishCreate, DishUpdate
 
 
 class DishCrud:
-    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:
+    def __init__(self, db: AsyncSession = Depends(get_session)) -> None:
         self.db = db
         self.model = Dish
 

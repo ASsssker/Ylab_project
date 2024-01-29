@@ -1,0 +1,1254 @@
+Index: Dockerfile
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>FROM python:3.10-alpine\n\nWORKDIR /usr/src/app\n\nCOPY requirements.txt ./\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY . .\n\nEXPOSE 80\n\nCMD [ \"uvicorn\", \"main:app\", \"--host\", \"0.0.0.0\", \"--port\", \"80\"]
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/Dockerfile b/Dockerfile
+--- a/Dockerfile	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/Dockerfile	(date 1706535025987)
+@@ -1,4 +1,4 @@
+-FROM python:3.10-alpine
++FROM python:3.10-slim
+ 
+ WORKDIR /usr/src/app
+ 
+Index: tests/test_menu.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/test_menu.py b/tests/test_menu.py
+new file mode 100644
+--- /dev/null	(date 1706534452571)
++++ b/tests/test_menu.py	(date 1706534452571)
+@@ -0,0 +1,106 @@
++from http import HTTPStatus
++from httpx import AsyncClient
++from typing import Any
++from apps.api.menu_api import (
++    get_menu,
++    get_menus,
++    post_menu,
++    update_menu,
++    delete_menu
++)
++from .utils import reverse
++
++
++async def test_all_menu_list_is_empty(ac: AsyncClient) -> None:
++    """Проверка получения пустого списка меню."""
++    response = await ac.get(reverse(get_menus))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_post_menu(menu_post_data: dict[str, str], saved_data: dict[str, Any], ac: AsyncClient) -> None:
++    """Проверка добавления меню."""
++    response = await ac.post(reverse(post_menu), json=menu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu_post_data['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu_post_data['description'], 'Описание меню не соответствует ожидаемому'
++    saved_data['menu'] = response_data
++
++
++async def test_all_menu_list_is_not_empty(ac: AsyncClient):
++    """Проверка получения списка меню после добавления записи."""
++    response = await ac.get(reverse(get_menus))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() != [], 'В ответе пустой список'
++
++
++async def test_get_specific_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения конкретного меню."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu['description'], 'Описание меню не соответствует ожидаемому'
++
++
++async def test_update_menu(saved_data: dict[str, str], menu_patch_data: dict[str, str], ac: AsyncClient):
++    """Проверка обновления меню."""
++    menu = saved_data['menu']
++    response = await ac.patch(reverse(update_menu, menu_id=menu['id']), json=menu_patch_data)
++    assert response.status_code == 200, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert response_data['title'] == menu_patch_data['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu_patch_data['description'], 'Описание меню не соответствует ожидаемому'
++    saved_data['menu'] = response_data
++
++
++async def test_get_updated_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка обновленных данных в меню."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu['description'], 'Описание меню не соответствует ожидаемому'
++
++
++async def test_delete_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка удаления данных в меню."""
++    menu = saved_data['menu']
++    response = await ac.delete(reverse(delete_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_all_menu_list_is_empty_after_delete(ac: AsyncClient) -> None:
++    """Проверка получения пустого списка меню после удаления меню."""
++    response = await ac.get(reverse(get_menus))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_get_specific_menu_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получение конкретного меню после удаления."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.NOT_FOUND, 'Статус ответа не 404'
++    assert response.json()['detail'] == 'menu not found', 'Сообщение об ошибке не соответствует ожидаемому'
+Index: apps/menu/schema.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from pydantic import BaseModel\nfrom decimal import Decimal\nfrom uuid import UUID\n\n\nclass Base(BaseModel):\n    title: str\n    description: str\n\n\nclass MenuRead(Base):\n    id: UUID\n    submenus_count: int = 0\n    dishes_count: int = 0\n\n    class Config:\n        orm_mode = True\n\n\nclass MenuCreate(Base):\n    pass\n\n\nclass MenuUpdate(Base):\n    title: str = None\n    description: str = None\n\n\nclass SubmenuRead(Base):\n    id: UUID\n    menu_id: UUID\n    dishes_count: int = 0\n\n    class Config:\n        orm_mode = True\n\n\nclass SubmenuCreate(Base):\n    pass\n\n\nclass SubmenuUpdate(Base):\n    title: str = None\n    description: str = None\n\n\nclass DishRead(Base):\n    id: UUID\n    submenu_id: UUID\n    price: Decimal\n\n    class Config:\n        orm_mode = True\n\n\nclass DishCreate(Base):\n    price: Decimal\n\n\nclass DishUpdate(Base):\n    title: str = None\n    description: str = None\n    price: Decimal\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/apps/menu/schema.py b/apps/menu/schema.py
+--- a/apps/menu/schema.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/apps/menu/schema.py	(date 1706361604049)
+@@ -1,4 +1,4 @@
+-from pydantic import BaseModel
++from pydantic import BaseModel, ConfigDict
+ from decimal import Decimal
+ from uuid import UUID
+ 
+@@ -9,13 +9,11 @@
+ 
+ 
+ class MenuRead(Base):
++    model_config = ConfigDict(from_attributes=True)
+     id: UUID
+     submenus_count: int = 0
+     dishes_count: int = 0
+ 
+-    class Config:
+-        orm_mode = True
+-
+ 
+ class MenuCreate(Base):
+     pass
+@@ -27,13 +25,11 @@
+ 
+ 
+ class SubmenuRead(Base):
++    model_config = ConfigDict(from_attributes=True)
+     id: UUID
+     menu_id: UUID
+     dishes_count: int = 0
+ 
+-    class Config:
+-        orm_mode = True
+-
+ 
+ class SubmenuCreate(Base):
+     pass
+@@ -45,13 +41,11 @@
+ 
+ 
+ class DishRead(Base):
++    model_config = ConfigDict(from_attributes=True)
+     id: UUID
+     submenu_id: UUID
+     price: Decimal
+ 
+-    class Config:
+-        orm_mode = True
+-
+ 
+ class DishCreate(Base):
+     price: Decimal
+Index: .env.test
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.env.test b/.env.test
+new file mode 100644
+--- /dev/null	(date 1706539107009)
++++ b/.env.test	(date 1706539107009)
+@@ -0,0 +1,5 @@
++POSTGRES_USER=test
++POSTGRES_PASSWORD=test_pass
++POSTGRES_PORT=5432
++POSTGRES_DB=test_db
++HOST=db
+\ No newline at end of file
+Index: docker-compose-test.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docker-compose-test.yml b/docker-compose-test.yml
+new file mode 100644
+--- /dev/null	(date 1706537437520)
++++ b/docker-compose-test.yml	(date 1706537437520)
+@@ -0,0 +1,24 @@
++version: '2'
++
++services:
++  db:
++    image: postgres:15.1-alpine
++    restart: always
++    env_file:
++      - .env.test
++    healthcheck:
++      test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}"]
++      interval: 10s
++      timeout: 30s
++      retries: 3
++
++  app:
++    build: .
++    restart: always
++    container_name: app
++    env_file:
++      - .env.test
++    depends_on:
++      db:
++        condition: service_healthy
++    command: sh -c "pytest"
+Index: db/db_init.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker\nfrom sqlalchemy.orm import DeclarativeBase\nfrom settings import db_settings\n\n\nclass Base(DeclarativeBase):\n    pass\n\n\nasync_engine = create_async_engine(db_settings.database_url_asyncpg)\n\nAsyncSessionLocale = async_sessionmaker(\n    autocommit=False,\n    autoflush=False,\n    bind=async_engine,\n    class_=AsyncSession\n)\n\n\nasync def get_db():\n    \"\"\"Возвращает сессию с базой данных.\"\"\"\n    async with AsyncSessionLocale() as async_session:\n        yield async_session\n\n\nasync def init_db():\n    \"\"\"Создание таблиц.\"\"\"\n    async with async_engine.begin() as connect:\n        await connect.run_sync(Base.metadata.create_all)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/db/db_init.py b/db/db_init.py
+--- a/db/db_init.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/db/db_init.py	(date 1706363588264)
+@@ -1,3 +1,4 @@
++from typing import AsyncGenerator
+ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+ from sqlalchemy.orm import DeclarativeBase
+ from settings import db_settings
+@@ -17,7 +18,7 @@
+ )
+ 
+ 
+-async def get_db():
++async def get_session() -> AsyncGenerator[AsyncSession, None]:
+     """Возвращает сессию с базой данных."""
+     async with AsyncSessionLocale() as async_session:
+         yield async_session
+Index: pyproject.toml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pyproject.toml b/pyproject.toml
+new file mode 100644
+--- /dev/null	(date 1706536371214)
++++ b/pyproject.toml	(date 1706536371214)
+@@ -0,0 +1,4 @@
++[tool.pytest.ini_options]
++pythonpath = ["."]
++asyncio_mode = "auto"
++filterwarnings = ["ignore::DeprecationWarning"]
+\ No newline at end of file
+Index: tests/test_submenu.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/test_submenu.py b/tests/test_submenu.py
+new file mode 100644
+--- /dev/null	(date 1706539093812)
++++ b/tests/test_submenu.py	(date 1706539093812)
+@@ -0,0 +1,138 @@
++from http import HTTPStatus
++from httpx import AsyncClient
++from typing import Any
++from apps.api.menu_api import post_menu, delete_menu, get_menus
++from apps.api.submenu_api import (
++    get_submenu,
++    get_submenus,
++    update_submenu,
++    post_submenu,
++    delete_submenu
++)
++from .utils import reverse
++
++
++async def test_post_menu(menu_post_data: dict[str, str], saved_data: dict[str, Any], ac: AsyncClient) -> None:
++    """Проверка добавления меню."""
++    response = await ac.post(reverse(post_menu), json=menu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu_post_data['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu_post_data['description'], 'Описание меню не соответствует ожидаемому'
++    saved_data['menu'] = response_data
++
++
++async def test_submenu_list_is_empty(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения пустого списка подменю."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_post_submenu(saved_data: dict[str, str], submenu_post_data: dict[str, str], ac: AsyncClient):
++    """Проверка добавления подменю."""
++    menu = saved_data['menu']
++    response = await ac.post(reverse(post_submenu, menu_id=menu['id']), json=submenu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu_post_data['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
++    saved_data['submenu'] = response_data
++
++
++async def test_submenu_list_is_not_empty(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения списка подменю после добавления записи."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() != [], 'В ответе непустой список'
++
++
++async def test_get_specific_submenu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения конкретного подменю."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu['description'], 'Описание подменю не соответствует ожидаемому'
++
++
++async def test_update_submenu(saved_data: dict[str, str], submenu_patch_data, ac: AsyncClient):
++    """Проверка обновления подменю."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.patch(reverse(update_submenu, menu_id=menu['id'], submenu_id=submenu['id']), json=submenu_patch_data)
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu_patch_data['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu_patch_data['description'], 'Описание подменю не соответствует ожидаемому'
++    saved_data['submenu'] = response_data
++
++
++async def test_get_updated_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения подменю после обновления."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu['description'], 'Описание подменю не соответствует ожидаемому'
++
++
++async def test_delete_submenu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка удаления подменю."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.delete(reverse(delete_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_submenu_list_is_empty_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения пустого списка подменю."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_get_specific_submenu_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения конкретного подменю после удаления."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.NOT_FOUND, 'Статус ответа не 404'
++    assert response.json()['detail'] == 'submenu not found', 'Сообщение об ошибке не соответствует ожидаемому'
++
++
++async def test_delete_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка удаления данных в меню."""
++    menu = saved_data['menu']
++    response = await ac.delete(reverse(delete_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_all_menu_list_is_empty_after_delete(ac: AsyncClient) -> None:
++    """Проверка получения пустого списка меню после удаления меню."""
++    response = await ac.get(reverse(get_menus))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
+Index: apps/menu/menu_crud.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from fastapi import Depends\nfrom sqlalchemy import func, select, distinct\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy.orm.exc import FlushError, NoResultFound\nfrom db.db_init import get_db\nfrom uuid import UUID\nfrom .utils import check_unique, check_exist_and_return, obj2dict\nfrom .models import Menu, Submenu, Dish\nfrom .schema import MenuCreate, MenuUpdate\n\n\nclass MenuCrud:\n    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:\n        self.db = db\n        self.model = Menu\n\n    async def get_menu_list(self) -> list[Menu]:\n        \"\"\"Получение списка меню.\"\"\"\n        submenus_count_alias = func.count(distinct(Submenu.id)).label('submenus_count')\n        dishes_count_alias = func.count(distinct(Dish.id)).label('dishes_count')\n        menus_query = (await self.db.execute(\n            select(self.model, submenus_count_alias, dishes_count_alias).join(self.model.submenus, isouter=True)\n            .join(Submenu.dishes, isouter=True).group_by(self.model.id)\n        )).all()\n\n        menu_list = []\n        for menu in menus_query:\n            serializer = menu._asdict()\n            menu_serializer = obj2dict(serializer['Menu'])\n            serializer.update(menu_serializer)\n            menu_list.append(serializer)\n        return menu_list\n\n    async def get_menu_by_id(self, menu_id: UUID) -> Menu:\n        \"\"\"Поолучение конкретного меню\"\"\"\n        submenus_count_alias = func.count(distinct(Submenu.id)).label('submenus_count')\n        dishes_count_alias = func.count(distinct(Dish.id)).label('dishes_count')\n        current_menu = (await self.db.execute(\n            select(self.model, submenus_count_alias, dishes_count_alias).\n            join(self.model.submenus, isouter=True).join(Submenu.dishes, isouter=True)\n            .where(self.model.id == menu_id).group_by(self.model.id)\n        )).first()\n        if not current_menu:\n            raise NoResultFound('menu not found')\n\n        serializer = current_menu._asdict()\n        menu_serializer = obj2dict(serializer['Menu'])\n        serializer.update(menu_serializer)\n        return serializer\n\n    async def create_menu(self, menu: MenuCreate) -> Menu:\n        \"\"\"Добавление нового меню\"\"\"\n        try:\n            await check_unique(db=self.db, obj=menu, model=self.model)\n        except FlushError:\n            raise FlushError('Такое меню уже существует')\n        menu_data = menu.model_dump(exclude_unset=True)\n        new_menu = self.model(**menu_data)\n        self.db.add(new_menu)\n        await self.db.commit()\n        await self.db.refresh(new_menu)\n        return new_menu\n\n    async def update_menu(self, menu_id: UUID, updated_menu: MenuUpdate) -> Menu:\n        \"\"\"Изменение меню по id.\"\"\"\n        current_menu = await check_exist_and_return(self.db, menu_id, self.model)\n        try:\n            await check_unique(\n                db=self.db,\n                obj=updated_menu,\n                model=self.model,\n                obj_id=menu_id\n            )\n        except FlushError:\n            raise FlushError('Такое меню уже существует')\n\n        menu_data = updated_menu.model_dump(exclude_unset=True)\n        for key, value in menu_data.items():\n            setattr(current_menu, key, value)\n        await self.db.commit()\n        await self.db.refresh(current_menu)\n        return current_menu\n\n    async def delete(self, menu_id: UUID) -> None:\n        \"\"\"Удаление меню по id\"\"\"\n        current_menu = await check_exist_and_return(self.db, menu_id, self.model)\n        await self.db.delete(current_menu)\n        await self.db.commit()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/apps/menu/menu_crud.py b/apps/menu/menu_crud.py
+--- a/apps/menu/menu_crud.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/apps/menu/menu_crud.py	(date 1706211879630)
+@@ -2,7 +2,7 @@
+ from sqlalchemy import func, select, distinct
+ from sqlalchemy.ext.asyncio import AsyncSession
+ from sqlalchemy.orm.exc import FlushError, NoResultFound
+-from db.db_init import get_db
++from db.db_init import get_session
+ from uuid import UUID
+ from .utils import check_unique, check_exist_and_return, obj2dict
+ from .models import Menu, Submenu, Dish
+@@ -10,7 +10,7 @@
+ 
+ 
+ class MenuCrud:
+-    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:
++    def __init__(self, db: AsyncSession = Depends(get_session)) -> None:
+         self.db = db
+         self.model = Menu
+ 
+Index: apps/menu/submenu_crud.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from fastapi import Depends\nfrom sqlalchemy import func, select, distinct\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy.orm.exc import FlushError, NoResultFound\nfrom db.db_init import get_db\nfrom uuid import UUID\nfrom .utils import check_unique, check_exist_and_return, obj2dict\nfrom .models import Submenu, Dish\nfrom .schema import SubmenuCreate, SubmenuUpdate\n\n\nclass SubmenuCrud:\n    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:\n        self.db = db\n        self.model = Submenu\n\n    async def get_submenu_list(self, menu_id: UUID) -> list[Submenu]:\n        \"\"\"Получение списка подменю.\"\"\"\n        submenus_query = (await self.db.execute(\n            select(self.model, func.count(distinct(Dish.id)).label('dishes_count'))\n            .join(self.model.dishes, isouter=True).where(self.model.menu_id == menu_id).group_by(self.model.id)\n        )).all()\n\n        submenu_list = []\n        for submenu in submenus_query:\n            serializer = submenu._asdict()\n            submenu_serializer = obj2dict(serializer['Submenu'])\n            serializer.update(submenu_serializer)\n            submenu_list.append(serializer)\n        return submenu_list\n\n    async def get_submenu_by_id(self, submenu_id: UUID) -> Submenu:\n        \"\"\"Поолучение конкретного подменю.\"\"\"\n        current_submenu = (await self.db.execute(\n            select(self.model, func.count(distinct(Dish.id)).label('dishes_count'))\n            .join(self.model.dishes, isouter=True).where(self.model.id == submenu_id)\n            .group_by(self.model.id)\n        )).first()\n        if not current_submenu:\n            raise NoResultFound('submenu not found')\n\n        serializer = current_submenu._asdict()\n        submenu_serializer = obj2dict(serializer['Submenu'])\n        serializer.update(submenu_serializer)\n        return serializer\n\n    async def create_submenu(self, menu_id: UUID, submenu: SubmenuCreate) -> Submenu:\n        \"\"\"Добавление нового подменю.\"\"\"\n        try:\n            await check_unique(db=self.db, obj=submenu, model=self.model)\n        except FlushError:\n            raise FlushError('Такое подменю уже существует')\n        submenu_data = submenu.model_dump(exclude_unset=True)\n        new_submenu = self.model(menu_id=menu_id, **submenu_data)\n        self.db.add(new_submenu)\n        await self.db.commit()\n        await self.db.refresh(new_submenu)\n        return new_submenu\n\n    async def update_submenu(self, submenu_id: UUID, updated_submenu: SubmenuUpdate) -> Submenu:\n        \"\"\"Изменение подменю по id.\"\"\"\n        current_submenu = await check_exist_and_return(self.db, submenu_id, self.model)\n        try:\n            await check_unique(\n                db=self.db,\n                obj=updated_submenu,\n                model=self.model,\n                obj_id=submenu_id\n            )\n        except FlushError:\n            raise FlushError('Такое подменю уже существует')\n\n        submenu_data = updated_submenu.model_dump(exclude_unset=True)\n        for key, value in submenu_data.items():\n            setattr(current_submenu, key, value)\n        await self.db.commit()\n        await self.db.refresh(current_submenu)\n        return current_submenu\n\n    async def delete(self, submenu_id: UUID) -> None:\n        \"\"\"Удаление подменю по id.\"\"\"\n        current_submenu = await check_exist_and_return(self.db, submenu_id, self.model)\n        await self.db.delete(current_submenu)\n        await self.db.commit()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/apps/menu/submenu_crud.py b/apps/menu/submenu_crud.py
+--- a/apps/menu/submenu_crud.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/apps/menu/submenu_crud.py	(date 1706211879634)
+@@ -2,7 +2,7 @@
+ from sqlalchemy import func, select, distinct
+ from sqlalchemy.ext.asyncio import AsyncSession
+ from sqlalchemy.orm.exc import FlushError, NoResultFound
+-from db.db_init import get_db
++from db.db_init import get_session
+ from uuid import UUID
+ from .utils import check_unique, check_exist_and_return, obj2dict
+ from .models import Submenu, Dish
+@@ -10,7 +10,7 @@
+ 
+ 
+ class SubmenuCrud:
+-    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:
++    def __init__(self, db: AsyncSession = Depends(get_session)) -> None:
+         self.db = db
+         self.model = Submenu
+ 
+Index: main.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from fastapi import FastAPI\nfrom db.db_init import init_db\nfrom apps.api.main_api import api_router\n\n\napp = FastAPI()\n\n\n@app.on_event('startup')\nasync def on_startup():\n    await init_db()\n\napp.include_router(api_router)\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/main.py b/main.py
+--- a/main.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/main.py	(date 1706364276743)
+@@ -1,13 +1,14 @@
+ from fastapi import FastAPI
++from contextlib import asynccontextmanager
+ from db.db_init import init_db
+ from apps.api.main_api import api_router
+ 
+-
+-app = FastAPI()
+-
+-
+-@app.on_event('startup')
+-async def on_startup():
++@asynccontextmanager
++async def lifespan(_: FastAPI):
+     await init_db()
++    yield
++
++
++app = FastAPI(lifespan=lifespan)
+ 
+ app.include_router(api_router)
+Index: tests/test_dish.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/test_dish.py b/tests/test_dish.py
+new file mode 100644
+--- /dev/null	(date 1706534452575)
++++ b/tests/test_dish.py	(date 1706534452575)
+@@ -0,0 +1,172 @@
++from http import HTTPStatus
++from httpx import AsyncClient
++from typing import Any
++from apps.api.menu_api import post_menu, delete_menu, get_menus
++from apps.api.submenu_api import post_submenu, get_submenus, delete_submenu
++from apps.api.dish_api import (
++    post_dish,
++    update_dish,
++    get_dish,
++    get_dishes,
++    delete_dish
++)
++from .utils import reverse
++
++
++async def test_post_menu(menu_post_data: dict[str, str], saved_data: dict[str, Any], ac: AsyncClient) -> None:
++    """Проверка добавления меню."""
++    response = await ac.post(reverse(post_menu), json=menu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu_post_data['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu_post_data['description'], 'Описание меню не соответствует ожидаемому'
++    saved_data['menu'] = response_data
++
++
++async def test_post_submenu(submenu_post_data: dict[str, str], saved_data: dict[str, Any], ac: AsyncClient) -> None:
++    """Проверка добавления подменю."""
++    menu = saved_data['menu']
++    response = await ac.post(reverse(post_submenu, menu_id=menu['id']), json=submenu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu_post_data['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
++    saved_data['submenu'] = response_data
++
++
++async def test_all_dish_list_is_emty(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения пустого списка блюд."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_dishes, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_post_dish(dish_post_data_1: dict[str, str], saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка добавления блюда."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.post(reverse(post_dish, menu_id=menu['id'], submenu_id=submenu['id']), json=dish_post_data_1)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
++    assert 'title' in response_data, 'Название бдюда отсуствует в ответе'
++    assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
++    assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
++    assert response_data['title'] == dish_post_data_1['title'], 'Название блюда не соответствует ожидаемому'
++    assert response_data['description'] == dish_post_data_1['description'], 'Описание блюда не соответствует ожидаемому'
++    assert float(response_data['price']) == round(dish_post_data_1['price'], 2), 'Цена блюда не соответствует ожидаемому'
++    saved_data['dish'] = response_data
++
++
++async def test_all_dish_list_is_not_empty(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получния списка блюд после добавления записи."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_dishes, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() != [], 'В ответе пустой список'
++
++
++async def test_get_specific_dish(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получение конкретного блюда."""
++    menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
++    response = await ac.get(reverse(get_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
++    assert 'title' in response_data, 'Название бдюда отсуствует в ответе'
++    assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
++    assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
++    assert response_data['title'] == dish['title'], 'Название блюда не соответствует ожидаемому'
++    assert response_data['description'] == dish['description'], 'Описание блюда не соответствует ожидаемому'
++    assert float(response_data['price']) == float(dish['price']), 'Цена блюда не соответствует ожидаемому'
++
++
++async def test_update_dish(saved_data: dict[str, str], dish_patch_data: dict[str, str], ac: AsyncClient):
++    """Проверка обновления блюда."""
++    menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
++    response = await ac.patch(reverse(update_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']), json=dish_patch_data)
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
++    assert 'title' in response_data, 'Название бдюда отсуствует в ответе'
++    assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
++    assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
++    assert response_data['title'] == dish_patch_data['title'], 'Название блюда не соответствует ожидаемому'
++    assert response_data['description'] == dish_patch_data['description'], 'Описание блюда не соответствует ожидаемому'
++    assert float(response_data['price']) == round(dish_patch_data['price'], 2), 'Цена блюда не соответствует ожидаемому'
++    saved_data['dish'] = response_data
++
++
++async def test_get_updated_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения обновленного меню"""
++    menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
++    response = await ac.get(reverse(get_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
++    assert 'title' in response_data, 'Название бдюда отсуствует в ответе'
++    assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
++    assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
++    assert response_data['title'] == dish['title'], 'Название блюда не соответствует ожидаемому'
++    assert response_data['description'] == dish['description'], 'Описание блюда не соответствует ожидаемому'
++    assert float(response_data['price']) == float(dish['price']), 'Цена блюда не соответствует ожидаемому'
++
++
++async def test_delete_dish(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка удаления блюда."""
++    menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
++    response = await ac.delete(reverse(delete_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_all_dish_list_is_emty_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения пустого списка блюд после удаления."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_dishes, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_get_specific_dish_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения конкретного блюда после удаления."""
++    menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
++    response = await ac.get(reverse(get_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
++    assert response.status_code == HTTPStatus.NOT_FOUND, 'Статус ответа не 404'
++
++
++async def test_delete_submenu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка удаления подменю."""
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.delete(reverse(delete_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_submenu_list_is_empty_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка получения пустого списка подменю."""
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_delete_menu(saved_data: dict[str, str], ac: AsyncClient):
++    """Проверка удаления данных в меню."""
++    menu = saved_data['menu']
++    response = await ac.delete(reverse(delete_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_all_menu_list_is_empty_after_delete(ac: AsyncClient) -> None:
++    """Проверка получения пустого списка меню после удаления меню."""
++    response = await ac.get(reverse(get_menus))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
+Index: tests/test_count_dishes_and_submenus.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/test_count_dishes_and_submenus.py b/tests/test_count_dishes_and_submenus.py
+new file mode 100644
+--- /dev/null	(date 1706539779047)
++++ b/tests/test_count_dishes_and_submenus.py	(date 1706539779047)
+@@ -0,0 +1,148 @@
++"""
++    Проверка кол-ва блюд и подменю в меню
++"""
++
++
++from http import HTTPStatus
++from httpx import AsyncClient
++from typing import Any
++from apps.api.menu_api import post_menu, delete_menu, get_menus, get_menu
++from apps.api.submenu_api import post_submenu, get_submenus, get_submenu, delete_submenu
++from apps.api.dish_api import post_dish
++from .utils import reverse
++
++
++async def test_post_menu(menu_post_data: dict[str, str], saved_data: dict[str, Any], ac: AsyncClient) -> None:
++    response = await ac.post(reverse(post_menu), json=menu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu_post_data['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu_post_data['description'], 'Описание меню не соответствует ожидаемому'
++    saved_data['menu'] = response_data
++
++
++async def test_post_submenu(saved_data: dict[str, str], submenu_post_data: dict[str, str], ac: AsyncClient):
++    menu = saved_data['menu']
++    response = await ac.post(reverse(post_submenu, menu_id=menu['id']), json=submenu_post_data)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu_post_data['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
++    saved_data['submenu'] = response_data
++
++
++async def test_post_dish_1(dish_post_data_1: dict[str, str], saved_data: dict[str, str], ac: AsyncClient):
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.post(reverse(post_dish, menu_id=menu['id'], submenu_id=submenu['id']), json=dish_post_data_1)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
++    assert 'title' in response_data, 'Название бдюда отсуствует в ответе'
++    assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
++    assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
++    assert response_data['title'] == dish_post_data_1['title'], 'Название блюда не соответствует ожидаемому'
++    assert response_data['description'] == dish_post_data_1['description'], 'Описание блюда не соответствует ожидаемому'
++    assert float(response_data['price']) == round(dish_post_data_1['price'], 2), 'Цена блюда не соответствует ожидаемому'
++    saved_data['dish_1'] = response_data
++
++
++async def test_post_dish_2(dish_post_data_2: dict[str, str], saved_data: dict[str, str], ac: AsyncClient):
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.post(reverse(post_dish, menu_id=menu['id'], submenu_id=submenu['id']), json=dish_post_data_2)
++    assert response.status_code == HTTPStatus.CREATED, 'Статус ответа не 201'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
++    assert 'title' in response_data, 'Название бдюда отсуствует в ответе'
++    assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
++    assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
++    assert response_data['title'] == dish_post_data_2['title'], 'Название блюда не соответствует ожидаемому'
++    assert response_data['description'] == dish_post_data_2['description'], 'Описание блюда не соответствует ожидаемому'
++    assert float(response_data['price']) == round(dish_post_data_2['price'], 2), 'Цена блюда не соответствует ожидаемому'
++    saved_data['dish_2'] = response_data
++
++
++async def test_get_specific_menu(saved_data: dict[str, str], ac: AsyncClient):
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu['description'], 'Описание меню не соответствует ожидаемому'
++    assert response_data['submenus_count'] == 1, 'Количество подменю не соответствует ожидаемому'
++    assert response_data['dishes_count'] == 2, 'Количество блюд не соответствует ожидаемому'
++
++
++async def test_get_specific_submenu(saved_data: dict[str, str], ac: AsyncClient):
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
++    assert 'title' in response_data, 'Название подменю отсуствует в ответе'
++    assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == submenu['title'], 'Название подменю не соответствует ожидаемому'
++    assert response_data['description'] == submenu['description'], 'Описание подменю не соответствует ожидаемому'
++    assert response_data['dishes_count'] == 2, 'Количество блюд не соответствует ожидаемому'
++
++
++async def test_delete_submenu(saved_data: dict[str, str], ac: AsyncClient):
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.delete(reverse(delete_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_submenu_list_is_empty(saved_data: dict[str, str], ac: AsyncClient):
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_dish_list_is_empty(saved_data: dict[str, str], ac: AsyncClient):
++    menu, submenu = saved_data['menu'], saved_data['submenu']
++    response = await ac.get(reverse(get_submenus, menu_id=menu['id'], submenu_id=submenu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
++
++
++async def test_get_specific_menu_after_delete(saved_data: dict[str, str], ac: AsyncClient):
++    menu = saved_data['menu']
++    response = await ac.get(reverse(get_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    response_data = response.json()
++    assert 'id' in response_data, 'Идентификатор меню отсуствует в ответе'
++    assert 'title' in response_data, 'Название меню отсуствует в ответе'
++    assert 'description' in response_data, 'Описание меню отсуствует в ответе'
++    assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
++    assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
++    assert response_data['title'] == menu['title'], 'Название меню не соответствует ожидаемому'
++    assert response_data['description'] == menu['description'], 'Описание меню не соответствует ожидаемому'
++    assert response_data['submenus_count'] == 0, 'Количество подменю не соответствует ожидаемому'
++    assert response_data['dishes_count'] == 0, 'Количество блюд не соответствует ожидаемому'
++
++
++async def test_delete_menu(saved_data: dict[str, str], ac: AsyncClient):
++    menu = saved_data['menu']
++    response = await ac.delete(reverse(delete_menu, menu_id=menu['id']))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++
++
++async def test_all_menu_list_is_empty(ac: AsyncClient) -> None:
++    response = await ac.get(reverse(get_menus))
++    assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
++    assert response.json() == [], 'В ответе непустой список'
+Index: apps/menu/dish_crud.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from fastapi import Depends\nfrom sqlalchemy import select\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy.orm.exc import FlushError, NoResultFound\nfrom db.db_init import get_db\nfrom uuid import UUID\nfrom .utils import check_unique, check_exist_and_return\nfrom .models import Dish\nfrom .schema import DishCreate, DishUpdate\n\n\nclass DishCrud:\n    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:\n        self.db = db\n        self.model = Dish\n\n    async def get_dish_list(self, submenu_id: UUID) -> list[Dish]:\n        \"\"\"Получение списка блюд.\"\"\"\n        return await self.db.scalars(select(self.model).where(self.model.submenu_id == submenu_id))\n\n    async def get_dish_by_id(self, dish_id: UUID) -> Dish:\n        \"\"\"Поолучение конкретного блюда.\"\"\"\n        current_dish = await self.db.scalar(select(self.model).where(self.model.id == dish_id))\n        if not current_dish:\n            raise NoResultFound('dish not found')\n\n        return current_dish\n\n    async def create_dish(self, submenu_id: UUID, dish: DishCreate) -> Dish:\n        \"\"\"Добавление нового блюда.\"\"\"\n        try:\n            await check_unique(db=self.db, obj=dish, model=self.model)\n        except FlushError:\n            raise FlushError('Такое блюдо уже существует')\n        dish_data = dish.model_dump(exclude_unset=True)\n        new_dish = self.model(submenu_id=submenu_id, **dish_data)\n        self.db.add(new_dish)\n        await self.db.commit()\n        await self.db.refresh(new_dish)\n        return new_dish\n\n    async def update_dish(self, dish_id: UUID, updated_dish: DishUpdate) -> Dish:\n        \"\"\"Изменение подменю по id.\"\"\"\n        current_dish = await check_exist_and_return(self.db, dish_id, self.model)\n        try:\n            await check_unique(\n                db=self.db,\n                obj=updated_dish,\n                model=self.model,\n                obj_id=dish_id\n            )\n        except FlushError:\n            raise FlushError('Такое блюдо уже существует')\n\n        dish_data = updated_dish.model_dump(exclude_unset=True)\n        for key, value in dish_data.items():\n            setattr(current_dish, key, value)\n        await self.db.commit()\n        await self.db.refresh(current_dish)\n        return current_dish\n\n    async def delete(self, dish_id: UUID) -> None:\n        \"\"\"Удаление блюда по id.\"\"\"\n        current_dish = await check_exist_and_return(self.db, dish_id, self.model)\n        await self.db.delete(current_dish)\n        await self.db.commit()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/apps/menu/dish_crud.py b/apps/menu/dish_crud.py
+--- a/apps/menu/dish_crud.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/apps/menu/dish_crud.py	(date 1706211879642)
+@@ -2,7 +2,7 @@
+ from sqlalchemy import select
+ from sqlalchemy.ext.asyncio import AsyncSession
+ from sqlalchemy.orm.exc import FlushError, NoResultFound
+-from db.db_init import get_db
++from db.db_init import get_session
+ from uuid import UUID
+ from .utils import check_unique, check_exist_and_return
+ from .models import Dish
+@@ -10,7 +10,7 @@
+ 
+ 
+ class DishCrud:
+-    def __init__(self, db: AsyncSession = Depends(get_db)) -> None:
++    def __init__(self, db: AsyncSession = Depends(get_session)) -> None:
+         self.db = db
+         self.model = Dish
+ 
+Index: requirements.txt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>annotated-types==0.6.0\nanyio==4.2.0\nasync-timeout==4.0.3\nasyncpg==0.29.0\nclick==8.1.7\nexceptiongroup==1.2.0\nfastapi==0.109.0\ngreenlet==3.0.3\nh11==0.14.0\nidna==3.6\npydantic==2.5.3\npydantic-settings==2.1.0\npydantic_core==2.14.6\npython-dotenv==1.0.0\nsniffio==1.3.0\nSQLAlchemy==2.0.1\nstarlette==0.35.1\ntyping_extensions==4.9.0\nuvicorn==0.26.0\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/requirements.txt b/requirements.txt
+--- a/requirements.txt	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/requirements.txt	(date 1706536511572)
+@@ -2,18 +2,27 @@
+ anyio==4.2.0
+ async-timeout==4.0.3
+ asyncpg==0.29.0
++certifi==2023.11.17
+ click==8.1.7
+ exceptiongroup==1.2.0
+ fastapi==0.109.0
+ greenlet==3.0.3
+ h11==0.14.0
++httpcore==1.0.2
++httpx==0.26.0
+ idna==3.6
++iniconfig==2.0.0
++packaging==23.2
++pluggy==1.4.0
+ pydantic==2.5.3
+ pydantic-settings==2.1.0
+ pydantic_core==2.14.6
++pytest==7.4.4
++pytest-asyncio==0.23.3
+ python-dotenv==1.0.0
+ sniffio==1.3.0
+ SQLAlchemy==2.0.1
+ starlette==0.35.1
++tomli==2.0.1
+ typing_extensions==4.9.0
+ uvicorn==0.26.0
+Index: settings.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>from pydantic_settings import BaseSettings, SettingsConfigDict\n\n\nclass DatabaseSettings(BaseSettings):\n    HOST: str\n    POSTGRES_PORT: int\n    POSTGRES_USER: str\n    POSTGRES_PASSWORD: str\n    POSTGRES_DB: str\n\n    @property\n    def database_url_asyncpg(self):\n        return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'\n\n    model_config = SettingsConfigDict(env_file='.env.db')\n\n\ndb_settings = DatabaseSettings()\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/settings.py b/settings.py
+--- a/settings.py	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/settings.py	(date 1706534773509)
+@@ -15,4 +15,20 @@
+     model_config = SettingsConfigDict(env_file='.env.db')
+ 
+ 
++class DatabaseTestSettings(BaseSettings):
++    HOST: str
++    POSTGRES_PORT: int
++    POSTGRES_USER: str
++    POSTGRES_PASSWORD: str
++    POSTGRES_DB: str
++
++    @property
++    def database_url_asyncpg(self):
++        return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
++
++    # model_config = SettingsConfigDict(env_file='.env.test')
++    model_config = SettingsConfigDict(env_file='.env.test')
++
++
+ db_settings = DatabaseSettings()
++db_test_settings = DatabaseTestSettings()
+Index: docker-compose.yml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>version: '2'\n\nservices:\n  db:\n    image: postgres:14-alpine\n    restart: always\n    env_file:\n      - .env.db\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready\", \"-U\", \"${POSTGRES_USER}\"]\n      interval: 10s\n      timeout: 30s\n      retries: 3\n\n  app:\n    build: .\n    restart: always\n    ports:\n      - \"8000:80\"\n    env_file:\n      - .env.db\n    depends_on:\n      db:\n        condition: service_healthy\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/docker-compose.yml b/docker-compose.yml
+--- a/docker-compose.yml	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/docker-compose.yml	(date 1706535025979)
+@@ -2,7 +2,7 @@
+ 
+ services:
+   db:
+-    image: postgres:14-alpine
++    image: postgres:15.1-alpine
+     restart: always
+     env_file:
+       - .env.db
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<project version=\"4\">\n  <component name=\"AutoImportSettings\">\n    <option name=\"autoReloadType\" value=\"SELECTIVE\" />\n  </component>\n  <component name=\"ChangeListManager\">\n    <list default=\"true\" id=\"76ac7666-8947-4451-b377-94a5c33ccacd\" name=\"Changes\" comment=\"\">\n      <change beforePath=\"$PROJECT_DIR$/.idea/workspace.xml\" beforeDir=\"false\" afterPath=\"$PROJECT_DIR$/.idea/workspace.xml\" afterDir=\"false\" />\n    </list>\n    <option name=\"SHOW_DIALOG\" value=\"false\" />\n    <option name=\"HIGHLIGHT_CONFLICTS\" value=\"true\" />\n    <option name=\"HIGHLIGHT_NON_ACTIVE_CHANGELIST\" value=\"false\" />\n    <option name=\"LAST_RESOLUTION\" value=\"IGNORE\" />\n  </component>\n  <component name=\"FileTemplateManagerImpl\">\n    <option name=\"RECENT_TEMPLATES\">\n      <list>\n        <option value=\"Python Script\" />\n      </list>\n    </option>\n  </component>\n  <component name=\"Git.Settings\">\n    <option name=\"RECENT_GIT_ROOT_PATH\" value=\"$PROJECT_DIR$\" />\n  </component>\n  <component name=\"MarkdownSettingsMigration\">\n    <option name=\"stateVersion\" value=\"1\" />\n  </component>\n  <component name=\"ProblemsViewState\">\n    <option name=\"selectedTabId\" value=\"CurrentFile\" />\n  </component>\n  <component name=\"ProjectColorInfo\">{\n  &quot;associatedIndex&quot;: 4\n}</component>\n  <component name=\"ProjectId\" id=\"2bGrTabjCJAWZrKl4WwQjxeunWE\" />\n  <component name=\"ProjectLevelVcsManager\" settingsEditedManually=\"true\">\n    <ConfirmationsSetting value=\"1\" id=\"Add\" />\n  </component>\n  <component name=\"ProjectViewState\">\n    <option name=\"hideEmptyMiddlePackages\" value=\"true\" />\n    <option name=\"showLibraryContents\" value=\"true\" />\n  </component>\n  <component name=\"PropertiesComponent\"><![CDATA[{\n  \"keyToString\": {\n    \"RunOnceActivity.OpenProjectViewOnStart\": \"true\",\n    \"RunOnceActivity.ShowReadmeOnStart\": \"true\",\n    \"git-widget-placeholder\": \"master\",\n    \"run.code.analysis.last.selected.profile\": \"aDefault\",\n    \"settings.editor.selected.configurable\": \"editor.preferences.fonts.default\"\n  }\n}]]></component>\n  <component name=\"QodanaReportsService\">\n    <option name=\"descriptions\">\n      <ReportDescription localRun=\"true\" path=\"/tmp/qodana_output/qodana.sarif.json\" reportGuid=\"7aeb3c26-47e2-4420-b648-d4af9b66bc76\" reportId=\"YLab_project/qodana/2024-01-22\" />\n    </option>\n  </component>\n  <component name=\"RecentsManager\">\n    <key name=\"MoveFile.RECENT_KEYS\">\n      <recent name=\"$PROJECT_DIR$/apps/menu_api\" />\n      <recent name=\"$PROJECT_DIR$/apps/menu_app\" />\n      <recent name=\"$PROJECT_DIR$\" />\n    </key>\n  </component>\n  <component name=\"SharedIndexes\">\n    <attachedChunks>\n      <set>\n        <option value=\"bundled-python-sdk-50da183f06c8-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13135.95\" />\n      </set>\n    </attachedChunks>\n  </component>\n  <component name=\"SpellCheckerSettings\" RuntimeDictionaries=\"0\" Folders=\"0\" CustomDictionaries=\"0\" DefaultDictionary=\"application-level\" UseSingleDictionary=\"true\" transferred=\"true\" />\n  <component name=\"TaskManager\">\n    <task active=\"true\" id=\"Default\" summary=\"Default task\">\n      <changelist id=\"76ac7666-8947-4451-b377-94a5c33ccacd\" name=\"Changes\" comment=\"\" />\n      <created>1705852266114</created>\n      <option name=\"number\" value=\"Default\" />\n      <option name=\"presentableId\" value=\"Default\" />\n      <updated>1705852266114</updated>\n    </task>\n    <servers />\n  </component>\n  <component name=\"UnknownFeatures\">\n    <option featureType=\"com.intellij.fileTypeFactory\" implementationName=\".env\" />\n  </component>\n  <component name=\"Vcs.Log.Tabs.Properties\">\n    <option name=\"TAB_STATES\">\n      <map>\n        <entry key=\"MAIN\">\n          <value>\n            <State />\n          </value>\n        </entry>\n      </map>\n    </option>\n  </component>\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision 295dfbc01d3100b920cf550595f507e4382d9b27)
++++ b/.idea/workspace.xml	(date 1706540068785)
+@@ -5,7 +5,28 @@
+   </component>
+   <component name="ChangeListManager">
+     <list default="true" id="76ac7666-8947-4451-b377-94a5c33ccacd" name="Changes" comment="">
++      <change afterPath="$PROJECT_DIR$/.env.test" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/docker-compose-test.yml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/conftest.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/fixtures.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/test_count_dishes_and_submenus.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/test_dish.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/test_menu.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/test_submenu.py" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/tests/utils.py" afterDir="false" />
+       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/apps/menu/dish_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/dish_crud.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/apps/menu/menu_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/menu_crud.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/apps/menu/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/schema.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/apps/menu/submenu_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/submenu_crud.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/db/db_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/db_init.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.yml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
+     </list>
+     <option name="SHOW_DIALOG" value="false" />
+     <option name="HIGHLIGHT_CONFLICTS" value="true" />
+@@ -27,6 +48,7 @@
+   </component>
+   <component name="ProblemsViewState">
+     <option name="selectedTabId" value="CurrentFile" />
++    <option name="showPreview" value="true" />
+   </component>
+   <component name="ProjectColorInfo">{
+   &quot;associatedIndex&quot;: 4
+@@ -41,18 +63,14 @@
+   </component>
+   <component name="PropertiesComponent"><![CDATA[{
+   "keyToString": {
++    "Python tests.Python tests for tests.test_menu.test_all_menu_list_is_empty.executor": "Run",
+     "RunOnceActivity.OpenProjectViewOnStart": "true",
+     "RunOnceActivity.ShowReadmeOnStart": "true",
+     "git-widget-placeholder": "master",
+     "run.code.analysis.last.selected.profile": "aDefault",
+-    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
++    "settings.editor.selected.configurable": "preferences.pluginManager"
+   }
+ }]]></component>
+-  <component name="QodanaReportsService">
+-    <option name="descriptions">
+-      <ReportDescription localRun="true" path="/tmp/qodana_output/qodana.sarif.json" reportGuid="7aeb3c26-47e2-4420-b648-d4af9b66bc76" reportId="YLab_project/qodana/2024-01-22" />
+-    </option>
+-  </component>
+   <component name="RecentsManager">
+     <key name="MoveFile.RECENT_KEYS">
+       <recent name="$PROJECT_DIR$/apps/menu_api" />
+@@ -60,10 +78,32 @@
+       <recent name="$PROJECT_DIR$" />
+     </key>
+   </component>
++  <component name="RunManager">
++    <configuration name="Python tests for tests.test_menu.test_all_menu_list_is_empty" type="tests" factoryName="Autodetect" temporary="true" nameIsGenerated="true">
++      <module name="YLab_project" />
++      <option name="ENV_FILES" value="" />
++      <option name="INTERPRETER_OPTIONS" value="" />
++      <option name="PARENT_ENVS" value="true" />
++      <option name="SDK_HOME" value="" />
++      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
++      <option name="IS_MODULE_SDK" value="true" />
++      <option name="ADD_CONTENT_ROOTS" value="true" />
++      <option name="ADD_SOURCE_ROOTS" value="true" />
++      <option name="_new_additionalArguments" value="&quot;&quot;" />
++      <option name="_new_target" value="&quot;tests.test_menu.test_all_menu_list_is_empty&quot;" />
++      <option name="_new_targetType" value="&quot;PYTHON&quot;" />
++      <method v="2" />
++    </configuration>
++    <recent_temporary>
++      <list>
++        <item itemvalue="Python tests.Python tests for tests.test_menu.test_all_menu_list_is_empty" />
++      </list>
++    </recent_temporary>
++  </component>
+   <component name="SharedIndexes">
+     <attachedChunks>
+       <set>
+-        <option value="bundled-python-sdk-50da183f06c8-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13135.95" />
++        <option value="bundled-python-sdk-5a2391486177-d3b881c8e49f-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-233.13763.11" />
+       </set>
+     </attachedChunks>
+   </component>
+Index: tests/fixtures.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/fixtures.py b/tests/fixtures.py
+new file mode 100644
+--- /dev/null	(date 1706534452571)
++++ b/tests/fixtures.py	(date 1706534452571)
+@@ -0,0 +1,74 @@
++import pytest
++from typing import Any
++
++
++@pytest.fixture
++def menu_post_data() -> dict[str, str]:
++    """Фикстура добавления меню"""
++    return {
++        'title': 'Menu 1',
++        'description': 'description 1'
++    }
++
++
++@pytest.fixture
++def menu_patch_data() -> dict[str, str]:
++    """Фикстура обновления меню"""
++    return {
++        'title': 'Menu 1 updated',
++        'description': 'description 1 updated'
++    }
++
++
++@pytest.fixture
++def submenu_post_data() -> dict[str, str]:
++    """Фикстура добавления подменю"""
++    return {
++        'title': 'Submenu 1',
++        'description': 'description 1'
++    }
++
++
++@pytest.fixture
++def submenu_patch_data() -> dict[str, str]:
++    """Фикстура обновления подменю"""
++    return {
++        'title': 'Submenu 1 updated',
++        'description': 'description 1 updated'
++    }
++
++
++@pytest.fixture
++def dish_post_data_1() -> dict[str, str]:
++    """Фикстура добавления блюда"""
++    return {
++        'title': 'Dish 1',
++        'description': 'description 1',
++        'price': 2222.2222
++    }
++
++
++@pytest.fixture
++def dish_post_data_2() -> dict[str, str]:
++    """Фикстура добавления блюда"""
++    return {
++        'title': 'Dish 2',
++        'description': 'description 2',
++        'price': 4444.444
++    }
++
++
++@pytest.fixture
++def dish_patch_data() -> dict[str, str]:
++    """Фикстура обновления блюда"""
++    return {
++        'title': 'Dish 1 updated',
++        'description': 'description 1 updated',
++        'price': 333.33
++    }
++
++
++@pytest.fixture(scope='module')
++def saved_data() -> dict[str, Any]:
++    """Фикстура для сохранения тестируемых объектов."""
++    return {}
+Index: tests/conftest.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/conftest.py b/tests/conftest.py
+new file mode 100644
+--- /dev/null	(date 1706539093796)
++++ b/tests/conftest.py	(date 1706539093796)
+@@ -0,0 +1,58 @@
++import asyncio
++import pytest
++from typing import AsyncGenerator
++from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
++from sqlalchemy.pool import NullPool
++from httpx import AsyncClient
++from db.db_init import Base, get_session
++from main import app
++from settings import db_test_settings
++
++
++pytest_plugins = ('tests.fixtures', 'tests.test_submenu')
++
++
++engine_test = create_async_engine(
++    db_test_settings.database_url_asyncpg,
++    poolclass=NullPool
++)
++AsyncSessionLocale = async_sessionmaker(
++    engine_test,
++    class_=AsyncSession,
++    expire_on_commit=False
++)
++Base.metadata.bind = engine_test
++
++
++async def ovveride_get_async_session() -> AsyncGenerator[AsyncSession, None]:
++    """Возвращает сессию с базой данных связанную с тестовым движком."""
++    async with AsyncSessionLocale() as session:
++        yield session
++
++
++app.dependency_overrides[get_session] = ovveride_get_async_session
++
++
++@pytest.fixture(scope='session', autouse=True)
++async def prepare_database() -> None:
++    """Создает тестовую базу данных."""
++    async with engine_test.begin() as connect:
++        await connect.run_sync(Base.metadata.create_all)
++    yield
++    async with engine_test.begin() as connect:
++        await connect.run_sync(Base.metadata.drop_all)
++
++
++@pytest.fixture(scope='module')
++def event_loop():
++    """Создает цикл событий для каждого тестового модуля."""
++    loop = asyncio.get_event_loop_policy().new_event_loop()
++    yield loop
++    loop.close()
++
++
++@pytest.fixture
++async def ac():
++    """Возвращает асинхронный клиент."""
++    async with AsyncClient(app=app, base_url='http://test') as ac:
++        yield ac
+Index: tests/utils.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/tests/utils.py b/tests/utils.py
+new file mode 100644
+--- /dev/null	(date 1706539736870)
++++ b/tests/utils.py	(date 1706539736870)
+@@ -0,0 +1,15 @@
++from typing import Callable
++from main import app
++
++
++def get_routes() -> dict[str, str]:
++    """Возвращает словарь с url адресами."""
++    routes = {}
++    for route in app.routes:
++        routes[route.name] = route.path
++    return routes
++
++
++def reverse(view: Callable, routes: dict[str, str] = get_routes(), **kwargs):
++    """Возврощает url адрес привязанный к функции представления."""
++    return routes[view.__name__].format(**kwargs)
+diff --git a/tests/__init__.py b/tests/__init__.py
+new file mode 100644
