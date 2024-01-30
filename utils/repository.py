@@ -35,10 +35,10 @@ class SQLAlchemyRepository(AbstractRepository):
         self.model = Base
         self.session = session
 
-    async def get_record(self, id: UUID):
+    async def get_record(self, record_id: UUID):
         record = (await self.session.execute(
-            select(self.model).where(self.model.id == id)
-        )).first()
+            select(self.model).where(self.model.id == record_id)
+        )).scalar_one_or_none()
         if not record:
             raise NoResultFound(f'{self.__class__.__name__.lower()} not found')
         return record
@@ -46,10 +46,10 @@ class SQLAlchemyRepository(AbstractRepository):
     async def get_records(self):
         records = (await self.session.execute(
             select(self.model).where(self.model.id == id)
-        )).all()
+        )).scalars()
         return records
 
-    async def add(self, model_data: BaseModel):
+    async def add(self, model_data: BaseModel, **kwargs):
         try:
             await check_unique(
                 session=self.session,
@@ -59,7 +59,7 @@ class SQLAlchemyRepository(AbstractRepository):
         except FlushError:
             raise FlushError('Такая запись уже существует')
         model_data = model_data.model_dump(exclude_unset=True)
-        new_record = self.model(**model_data)
+        new_record = self.model(**model_data, **kwargs)
         self.session.add(new_record)
         await self.session.commit()
         await self.session.refresh(new_record)

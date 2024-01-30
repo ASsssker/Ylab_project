@@ -5,11 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76ac7666-8947-4451-b377-94a5c33ccacd" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.env.db" beforeDir="false" afterPath="$PROJECT_DIR$/.env.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/menu_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/menu_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/menu_crud.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/submenu_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/submenu_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/submenu_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/submenu_crud.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/repository.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

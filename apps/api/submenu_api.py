@@ -12,14 +12,14 @@ submenu_router = APIRouter(prefix=PREFIX_LINK)
 @submenu_router.get(SUBMENUS_LINK, status_code=200, response_model=list[SubmenuRead])
 async def get_submenus(menu_id: UUID, crud: SubmenuCrud = Depends()) -> list[SubmenuRead]:
     """Получение списка подменю."""
-    return await crud.get_submenu_list(menu_id=menu_id)
+    return await crud.get_records(parent_record_id=menu_id)
 
 
 @submenu_router.post(SUBMENUS_LINK, status_code=201, response_model=SubmenuRead)
 async def post_submenu(menu_id: UUID, submenu: SubmenuCreate, crud: SubmenuCrud = Depends()) -> SubmenuRead:
     """Добавление нового подменю."""
     try:
-        return await crud.create_submenu(menu_id=menu_id, submenu=submenu)
+        return await crud.add(model_data=submenu, menu_id=menu_id)
     except FlushError as e:
         raise HTTPException(status_code=400, detail=e.args[0])
 
@@ -28,7 +28,7 @@ async def post_submenu(menu_id: UUID, submenu: SubmenuCreate, crud: SubmenuCrud 
 async def get_submenu(menu_id: UUID, submenu_id: UUID, crud: SubmenuCrud = Depends()) -> SubmenuRead:
     """Получение конкретного подменю."""
     try:
-        return await crud.get_submenu_by_id(submenu_id=submenu_id)
+        return await crud.get_record(record_id=submenu_id)
     except NoResultFound as e:
         raise HTTPException(status_code=404, detail=e.args[0])
 
@@ -37,7 +37,7 @@ async def get_submenu(menu_id: UUID, submenu_id: UUID, crud: SubmenuCrud = Depen
 async def update_submenu(menu_id: UUID, submenu_id: UUID, updated_submenu: SubmenuUpdate, crud: SubmenuCrud = Depends()) -> SubmenuRead:
     """Изменение подменю по id."""
     try:
-        return await crud.update_submenu(submenu_id=submenu_id, updated_submenu=updated_submenu)
+        return await crud.update(record_id=submenu_id, update_data=updated_submenu)
     except FlushError as e:
         raise HTTPException(status_code=400, detail=e.args[0])
     except NoResultFound as e:
@@ -48,6 +48,6 @@ async def update_submenu(menu_id: UUID, submenu_id: UUID, updated_submenu: Subme
 async def delete_submenu(menu_id: UUID, submenu_id: UUID, crud: SubmenuCrud = Depends()):
     """Удаление подменю по id."""
     try:
-        await crud.delete(submenu_id=submenu_id)
+        await crud.delete(record_id=submenu_id)
     except NoResultFound as e:
         raise HTTPException(status_code=404, detail=e.args[0])
