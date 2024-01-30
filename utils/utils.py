@@ -6,7 +6,7 @@ from uuid import UUID
 from db.db_init import Base
 
 
-async def check_exist_and_return(session: AsyncSession, object_id: UUID, model: Base) -> None:
+async def check_exist_and_return(session: AsyncSession, object_id: UUID, model: Base):
     """Проверка существования объекта в базе данных."""
     query = select(model).where(model.id == object_id)
     exists_object = await session.scalar(query)

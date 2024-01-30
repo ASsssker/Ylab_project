@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import NoResultFound
 from db.db_init import get_session
 from uuid import UUID
 from utils.repository import SQLAlchemyRepository
-from .models import Menu, Submenu, Dish
+from apps.menu.models import Menu, Submenu, Dish
 
 
 class MenuCrud(SQLAlchemyRepository):

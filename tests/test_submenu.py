@@ -1,8 +1,8 @@
 from http import HTTPStatus
 from httpx import AsyncClient
 from typing import Any
-from apps.api.menu_api import post_menu, delete_menu, get_menus
-from apps.api.submenu_api import (
+from apps.api.menu.menu import post_menu, delete_menu, get_menus
+from apps.api.menu.submenu import (
     get_submenu,
     get_submenus,
     update_submenu,

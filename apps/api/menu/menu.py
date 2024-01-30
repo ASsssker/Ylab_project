@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.exc import FlushError, NoResultFound
 from uuid import UUID
 from apps.menu.schema import MenuRead, MenuUpdate, MenuCreate
-from apps.menu.menu_crud import MenuCrud
-from .url_config import PREFIX_LINK, MENUS_LINK, MENU_LINK
+from apps.menu.repositories.menu import MenuCrud
+from apps.api.url_config import PREFIX_LINK, MENUS_LINK, MENU_LINK
 
 
 menu_router = APIRouter(prefix=PREFIX_LINK)

@@ -11,5 +11,5 @@ def get_routes() -> dict[str, str]:
 
 
 def reverse(view: Callable, routes: dict[str, str] = get_routes(), **kwargs):
-    """Возврощает url адрес привязанный к функции представления."""
+    """Возвращает url адрес привязанный к функции представления."""
     return routes[view.__name__].format(**kwargs)

@@ -1,7 +1,7 @@
 from http import HTTPStatus
 from httpx import AsyncClient
 from typing import Any
-from apps.api.menu_api import (
+from apps.api.menu.menu import (
     get_menu,
     get_menus,
     post_menu,

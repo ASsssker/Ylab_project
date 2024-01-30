@@ -4,7 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from db.db_init import get_session
 from uuid import UUID
 from utils.repository import SQLAlchemyRepository
-from .models import Dish
+from apps.menu.models import Dish
 
 
 class DishCrud(SQLAlchemyRepository):

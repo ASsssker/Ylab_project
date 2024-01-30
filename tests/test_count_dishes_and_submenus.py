@@ -6,9 +6,9 @@
 from http import HTTPStatus
 from httpx import AsyncClient
 from typing import Any
-from apps.api.menu_api import post_menu, delete_menu, get_menus, get_menu
-from apps.api.submenu_api import post_submenu, get_submenus, get_submenu, delete_submenu
-from apps.api.dish_api import post_dish
+from apps.api.menu.menu import post_menu, delete_menu, get_menus, get_menu
+from apps.api.menu.submenu import post_submenu, get_submenus, get_submenu, delete_submenu
+from apps.api.menu.dish import post_dish
 from .utils import reverse
 
 

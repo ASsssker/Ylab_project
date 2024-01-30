@@ -2,8 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.exc import FlushError, NoResultFound
 from uuid import UUID
 from apps.menu.schema import DishRead, DishUpdate, DishCreate
-from apps.menu.dish_crud import DishCrud
-from .url_config import PREFIX_LINK, DISHES_LINK, DISH_LINK
+from apps.menu.repositories.dish import DishCrud
+from apps.api.url_config import PREFIX_LINK, DISHES_LINK, DISH_LINK
 
 
 dish_router = APIRouter(prefix=PREFIX_LINK)
