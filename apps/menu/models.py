@@ -3,7 +3,6 @@ from sqlalchemy import Column, ForeignKey, String, Text, Numeric
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 from db.db_init import Base
-from .schema import MenuRead, SubmenuRead, DishRead
 
 
 class Menu(Base):
@@ -30,12 +29,12 @@ class Menu(Base):
         cascade='all, delete'
     )
 
-    def to_read_mode(self) -> MenuRead:
-        return MenuRead(
-            id=self.id,
-            title=self.title,
-            description=self.description
-        )
+    def to_read_mode(self) -> dict:
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description
+        }
 
 
 class Submenu(Base):
@@ -70,12 +69,13 @@ class Submenu(Base):
         cascade='all, delete'
     )
 
-    def to_read_mode(self) -> SubmenuRead:
-        return SubmenuRead(
-            id=self.id,
-            title=self.title,
-            description=self.description
-        )
+    def to_read_mode(self) -> dict:
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'menu_id': self.menu_id
+        }
 
 
 class Dish(Base):
@@ -109,9 +109,10 @@ class Dish(Base):
         back_populates='dishes'
     )
 
-    def to_read_mode(self) -> DishRead:
-        return DishRead(
-            id=self.id,
-            title=self.title,
-            description=self.description
-        )
+    def to_read_mode(self) -> dict:
+        return {
+            'id': self.id,
+            'title': self.title,
+            'description': self.description,
+            'submenu_id': self.submenu_id
+        }
