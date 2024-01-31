@@ -10,23 +10,23 @@ from .utils import check_unique, check_exist_and_return
 
 class AbstractRepository(ABC):
     @abstractmethod
-    async def get_record(self):
+    async def get_record(self, *args, **kwargs):
         raise NotImplemented
 
     @abstractmethod
-    async def get_records(self):
+    async def get_records(self, *args, **kwargs):
         raise NotImplemented
 
     @abstractmethod
-    async def add(self):
+    async def add(self, *args, **kwargs):
         raise NotImplemented
 
     @abstractmethod
-    async def update(self):
+    async def update(self, *args, **kwargs):
         raise NotImplemented
 
     @abstractmethod
-    async def delete(self):
+    async def delete(self, *args, **kwargs):
         raise NotImplemented
 
 
@@ -35,21 +35,21 @@ class SQLAlchemyRepository(AbstractRepository):
         self.model = Base
         self.session = session
 
-    async def get_record(self, record_id: UUID):
+    async def get_record(self, record_id: UUID, *args, **kwargs):
         record = (await self.session.execute(
             select(self.model).where(self.model.id == record_id)
         )).scalar_one_or_none()
         if not record:
-            raise NoResultFound(f'{self.__class__.__name__.lower()} not found')
+            raise NoResultFound(f'{self.model.__name__.lower()} not found')
         return record
 
-    async def get_records(self):
+    async def get_records(self, *args, **kwargs):
         records = (await self.session.execute(
             select(self.model).where(self.model.id == id)
         )).scalars()
         return records
 
-    async def add(self, model_data: BaseModel, **kwargs):
+    async def add(self, model_data: BaseModel, *args, **kwargs):
         try:
             await check_unique(
                 session=self.session,
@@ -65,7 +65,7 @@ class SQLAlchemyRepository(AbstractRepository):
         await self.session.refresh(new_record)
         return new_record
 
-    async def update(self, record_id: UUID, update_data: BaseModel):
+    async def update(self, record_id: UUID, update_data: BaseModel, *args, **kwargs):
         current_record = await check_exist_and_return(
             session=self.session,
             object_id=record_id,
@@ -88,7 +88,7 @@ class SQLAlchemyRepository(AbstractRepository):
         await self.session.refresh(current_record)
         return current_record
 
-    async def delete(self, record_id: UUID):
+    async def delete(self, record_id: UUID, *args, **kwargs):
         current_record = await check_exist_and_return(
             session=self.session,
             object_id=record_id,

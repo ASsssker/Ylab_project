@@ -5,23 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="76ac7666-8947-4451-b377-94a5c33ccacd" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.env.db" beforeDir="false" afterPath="$PROJECT_DIR$/.env.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.env.test" beforeDir="false" afterPath="$PROJECT_DIR$/.env.test" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/dish_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/dish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/main_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/router.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/menu_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/menu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/api/submenu_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/submenu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/__init__.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/dish_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/repositories/dish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/menu_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/repositories/menu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/submenu_crud.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/repositories/submenu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/apps/menu/utils.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_count_dishes_and_submenus.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_count_dishes_and_submenus.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/menu/dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/dish.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/menu/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/menu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/api/menu/submenu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/submenu.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_dish.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_menu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_submenu.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_submenu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/repository.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,7 +34,6 @@
   </component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
-    <option name="showPreview" value="true" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
@@ -56,17 +46,17 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python tests.Python tests for tests.test_menu.test_all_menu_list_is_empty.executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "/home/asker/Project/YLab_project/utils",
-    "run.code.analysis.last.selected.profile": "aDefault",
-    "settings.editor.selected.configurable": "editor.preferences.fonts.default"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python tests.Python tests for tests.test_menu.test_all_menu_list_is_empty.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/asker/Project/YLab_project/utils&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;aDefault&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/utils" />

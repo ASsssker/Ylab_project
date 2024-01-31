@@ -141,6 +141,7 @@ async def test_get_specific_dish_after_delete(saved_data: dict[str, str], ac: As
     menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
     response = await ac.get(reverse(get_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
     assert response.status_code == HTTPStatus.NOT_FOUND, 'Статус ответа не 404'
+    assert response.json()['detail'] == 'dish not found', 'Сообщение об ошибке не соответствует ожидаемому'
 
 
 async def test_delete_submenu(saved_data: dict[str, str], ac: AsyncClient):
