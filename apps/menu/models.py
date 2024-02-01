@@ -10,7 +10,7 @@ class Menu(Base):
     __tablename__ = 'menus'
 
     id = Column(
-        UUID(),
+        UUID(as_uuid=False),
         primary_key=True,
         default=uuid.uuid4,
         index=True
@@ -42,7 +42,7 @@ class Submenu(Base):
     __tablename__ = 'submenus'
 
     id = Column(
-        UUID(),
+        UUID(as_uuid=False),
         primary_key=True,
         default=uuid.uuid4,
         index=True
@@ -56,7 +56,7 @@ class Submenu(Base):
         nullable=False
     )
     menu_id = Column(
-        UUID(),
+        UUID(as_uuid=False),
         ForeignKey('menus.id')
     )
     menu = relationship(
@@ -83,7 +83,7 @@ class Dish(Base):
     __tablename__ = 'dishes'
 
     id = Column(
-        UUID(),
+        UUID(as_uuid=False),
         primary_key=True,
         default=uuid.uuid4,
         index=True
@@ -101,7 +101,7 @@ class Dish(Base):
         nullable=False
     )
     submenu_id = Column(
-        UUID(),
+        UUID(as_uuid=False),
         ForeignKey('submenus.id')
     )
     submenu = relationship(
@@ -114,5 +114,6 @@ class Dish(Base):
             'id': self.id,
             'title': self.title,
             'description': self.description,
-            'submenu_id': self.submenu_id
+            'submenu_id': self.submenu_id,
+            'price': str(self.price)
         }

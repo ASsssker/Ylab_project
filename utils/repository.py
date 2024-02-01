@@ -10,6 +10,10 @@ from .utils import check_unique, check_exist_and_return
 
 class AbstractRepository(ABC):
     @abstractmethod
+    def __init__(self):
+        pass
+
+    @abstractmethod
     async def get_record(self, *args, **kwargs):
         raise NotImplemented
 
@@ -41,13 +45,18 @@ class SQLAlchemyRepository(AbstractRepository):
         )).scalar_one_or_none()
         if not record:
             raise NoResultFound(f'{self.model.__name__.lower()} not found')
-        return record
+        return record.to_read_mode()
 
     async def get_records(self, *args, **kwargs):
         records = (await self.session.execute(
             select(self.model).where(self.model.id == id)
         )).scalars()
-        return records
+
+        record_list = []
+        for record in records:
+            serializer = record._asdict()
+            record_list.append(serializer[f'{self.model.__name__}'].to_read_mode())
+        return record_list
 
     async def add(self, model_data: BaseModel, *args, **kwargs):
         try:
@@ -63,7 +72,7 @@ class SQLAlchemyRepository(AbstractRepository):
         self.session.add(new_record)
         await self.session.commit()
         await self.session.refresh(new_record)
-        return new_record
+        return new_record.to_read_mode()
 
     async def update(self, record_id: UUID, update_data: BaseModel, *args, **kwargs):
         current_record = await check_exist_and_return(
@@ -86,7 +95,7 @@ class SQLAlchemyRepository(AbstractRepository):
             setattr(current_record, key, value)
         await self.session.commit()
         await self.session.refresh(current_record)
-        return current_record
+        return current_record.to_read_mode()
 
     async def delete(self, record_id: UUID, *args, **kwargs):
         current_record = await check_exist_and_return(

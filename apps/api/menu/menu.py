@@ -28,7 +28,7 @@ async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> MenuR
 async def get_menu(menu_id: UUID, service: MenuService = Depends()) -> MenuRead:
     """Получение конкретного меню."""
     try:
-        return await service.get_one(record_id=menu_id)
+        return await service.get_one(menu_id=menu_id)
     except NoResultFound as e:
         raise HTTPException(status_code=404, detail=e.args[0])
 
@@ -37,7 +37,7 @@ async def get_menu(menu_id: UUID, service: MenuService = Depends()) -> MenuRead:
 async def update_menu(menu_id: UUID, updated_menu: MenuUpdate, service: MenuService = Depends()) -> MenuRead:
     """Изменение меню по id."""
     try:
-        return await service.update(record_id=menu_id, update_data=updated_menu)
+        return await service.update(menu_id=menu_id, update_data=updated_menu)
     except FlushError as e:
         raise HTTPException(status_code=400, detail=e.args[0])
     except NoResultFound as e:
@@ -48,6 +48,6 @@ async def update_menu(menu_id: UUID, updated_menu: MenuUpdate, service: MenuServ
 async def delete_menu(menu_id: UUID, service: MenuService = Depends()):
     """Удаление меню по id."""
     try:
-        await service.delete(record_id=menu_id)
+        await service.delete(menu_id=menu_id)
     except NoResultFound as e:
         raise HTTPException(status_code=404, detail=e.args[0])

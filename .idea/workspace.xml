@@ -11,8 +11,19 @@
       <change beforePath="$PROJECT_DIR$/apps/api/menu/dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/dish.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/menu/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/menu.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/apps/api/menu/submenu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/api/menu/submenu.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_dish.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/repositories/dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/repositories/dish.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/repositories/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/repositories/menu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/repositories/submenu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/repositories/submenu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/schema.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/schema.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/services/dish.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/services/dish.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/services/menu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/services/menu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/apps/menu/services/submenu.py" beforeDir="false" afterPath="$PROJECT_DIR$/apps/menu/services/submenu.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db/db_init.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/db_init.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/settings.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/utils/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/repository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/services.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

@@ -10,7 +10,7 @@ class Base(BaseModel):
 
 class MenuRead(Base):
     model_config = ConfigDict(from_attributes=True)
-    id: UUID
+    id: str | UUID
     submenus_count: int = 0
     dishes_count: int = 0
 
@@ -26,8 +26,8 @@ class MenuUpdate(Base):
 
 class SubmenuRead(Base):
     model_config = ConfigDict(from_attributes=True)
-    id: UUID
-    menu_id: UUID
+    id: str | UUID
+    menu_id: str | UUID
     dishes_count: int = 0
 
 
@@ -42,9 +42,9 @@ class SubmenuUpdate(Base):
 
 class DishRead(Base):
     model_config = ConfigDict(from_attributes=True)
-    id: UUID
-    submenu_id: UUID
-    price: Decimal
+    id: str | UUID
+    submenu_id: str | UUID
+    price: str | Decimal
 
 
 class DishCreate(Base):

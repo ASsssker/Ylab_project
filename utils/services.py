@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
-from .repository import AbstractRepository
+from .repository import SQLAlchemyRepository
+from .cache_repository import CacheBaseRepository
 
 
 class AbstractService(ABC):
@@ -25,21 +26,37 @@ class AbstractService(ABC):
 
 
 class BaseService(AbstractService):
-    def __init__(self, repo: AbstractRepository):
-        self.repo = repo
+    def __init__(self, crud_repo: SQLAlchemyRepository, cache_repo: CacheBaseRepository):
+        self.crud_repo = crud_repo
+        self.cache_repo = cache_repo
 
     async def get_one(self, *args, **kwargs):
-        return await self.repo.get_record(*args, **kwargs)
+        cache = await self.cache_repo.get(*args, **kwargs)
+        if cache:
+            return cache
+        item = await self.crud_repo.get_record(*args, **kwargs)
+        await self.cache_repo.set(item, *args, **kwargs)
+        return item
 
     async def get_all(self, *args, **kwargs):
-        return await self.repo.get_records(*args, **kwargs)
+        cache = await self.cache_repo.get(*args, **kwargs)
+        if cache:
+            return cache
+        item = await self.crud_repo.get_records(*args, **kwargs)
+        await self.cache_repo.set(item, *args, **kwargs)
+        return item
 
     async def add(self, *args, **kwargs):
-        return await self.repo.add(*args, **kwargs)
+        item = await self.crud_repo.add(*args, **kwargs)
+        await self.cache_repo.delete(*args, **kwargs)
+        return item
 
     async def update(self, *args, **kwargs):
-        return await self.repo.update(*args, **kwargs)
+        item = await self.crud_repo.update(*args, **kwargs)
+        await self.cache_repo.delete_from_pattern(*args, **kwargs)
+        return item
 
     async def delete(self, *args, **kwargs):
-        return await self.repo.delete(*args, **kwargs)
+        await self.crud_repo.delete(*args, **kwargs)
+        await self.cache_repo.delete_from_pattern(*args, **kwargs)
 

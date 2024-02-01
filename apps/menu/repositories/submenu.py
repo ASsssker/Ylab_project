@@ -1,4 +1,5 @@
 from fastapi import Depends
+from pydantic import BaseModel
 from sqlalchemy import func, select, distinct
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import NoResultFound
@@ -13,7 +14,7 @@ class SubmenuCrud(SQLAlchemyRepository):
         self.session = session
         self.model = Submenu
 
-    async def get_records(self, parent_record_id: UUID):
+    async def get_records(self, parent_record_id: UUID, *args, **kwargs):
         """Получение списка подменю."""
         submenus_query = (await self.session.execute(
             select(self.model, func.count(distinct(Dish.id)).label('dishes_count'))
@@ -24,11 +25,12 @@ class SubmenuCrud(SQLAlchemyRepository):
         for submenu in submenus_query:
             serializer = submenu._asdict()
             submenu_serializer = serializer['Submenu'].to_read_mode()
+            del serializer['Submenu']
             serializer.update(submenu_serializer)
             submenu_list.append(serializer)
         return submenu_list
 
-    async def get_record(self, record_id: UUID):
+    async def get_record(self, record_id: UUID, *args, **kwargs):
         """Поолучение конкретного подменю."""
         current_submenu = (await self.session.execute(
             select(self.model, func.count(distinct(Dish.id)).label('dishes_count'))
@@ -40,6 +42,10 @@ class SubmenuCrud(SQLAlchemyRepository):
 
         serializer = current_submenu._asdict()
         submenu_serializer = serializer['Submenu'].to_read_mode()
+        del serializer['Submenu']
         serializer.update(submenu_serializer)
         return serializer
 
+    async def add(self, model_data: BaseModel, *args, **kwargs):
+        current_submenu = await super().add(model_data=model_data, menu_id=kwargs['menu_id'])
+        return current_submenu
