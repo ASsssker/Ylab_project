@@ -5,7 +5,7 @@ from apps.api.url_config import PREFIX_LINK, SUBMENU_LINK, SUBMENUS_LINK
 from apps.menu.schema import SubmenuCreate, SubmenuRead, SubmenuUpdate
 from apps.menu.services.submenu_service import SubmenuService
 
-submenu_router = APIRouter(prefix=PREFIX_LINK)
+submenu_router = APIRouter(prefix=PREFIX_LINK, tags=['Подменю'])
 
 
 @submenu_router.get(SUBMENUS_LINK, status_code=200, response_model=list[SubmenuRead])
@@ -32,7 +32,7 @@ async def get_submenu(menu_id: str, submenu_id: str, service: SubmenuService = D
         raise HTTPException(status_code=404, detail=e.args[0])
 
 
-@submenu_router.patch(SUBMENU_LINK, status_code=200, response_model=SubmenuRead)
+@submenu_router.patch(SUBMENU_LINK, status_code=200, response_model=SubmenuRead, response_model_exclude_none=True)
 async def update_submenu(menu_id: str, submenu_id: str, updated_submenu: SubmenuUpdate, service: SubmenuService = Depends()) -> dict:
     """Изменение подменю по id."""
     try:

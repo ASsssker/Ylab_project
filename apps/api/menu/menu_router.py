@@ -5,7 +5,7 @@ from apps.api.url_config import MENU_LINK, MENUS_LINK, PREFIX_LINK
 from apps.menu.schema import MenuCreate, MenuRead, MenuUpdate
 from apps.menu.services.menu_service import MenuService
 
-menu_router = APIRouter(prefix=PREFIX_LINK)
+menu_router = APIRouter(prefix=PREFIX_LINK, tags=['Меню'])
 
 
 @menu_router.get(MENUS_LINK, status_code=200, response_model=list[MenuRead])
@@ -32,7 +32,7 @@ async def get_menu(menu_id: str, service: MenuService = Depends()) -> dict:
         raise HTTPException(status_code=404, detail=e.args[0])
 
 
-@menu_router.patch(MENU_LINK, status_code=200, response_model=MenuRead)
+@menu_router.patch(MENU_LINK, status_code=200, response_model=MenuRead, response_model_exclude_none=True)
 async def update_menu(menu_id: str, updated_menu: MenuUpdate, service: MenuService = Depends()) -> dict:
     """Изменение меню по id."""
     try:

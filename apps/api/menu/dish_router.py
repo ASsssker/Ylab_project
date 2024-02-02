@@ -5,7 +5,7 @@ from apps.api.url_config import DISH_LINK, DISHES_LINK, PREFIX_LINK
 from apps.menu.schema import DishCreate, DishRead, DishUpdate
 from apps.menu.services.dish_service import DishService
 
-dish_router = APIRouter(prefix=PREFIX_LINK)
+dish_router = APIRouter(prefix=PREFIX_LINK, tags=['Блюда'])
 
 
 @dish_router.get(DISHES_LINK, status_code=200, response_model=list[DishRead])
@@ -32,7 +32,7 @@ async def get_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishSer
         raise HTTPException(status_code=404, detail=e.args[0])
 
 
-@dish_router.patch(DISH_LINK, status_code=200, response_model=DishRead)
+@dish_router.patch(DISH_LINK, status_code=200, response_model=DishRead, response_model_exclude_none=True)
 async def update_dish(menu_id: str, submenu_id: str, dish_id: str, updated_dish: DishUpdate, service: DishService = Depends()) -> dict:
     """Изменение блюда по id."""
     try:
