@@ -1,7 +1,8 @@
 from fastapi import APIRouter
-from .menu.menu import menu_router
-from .menu.submenu import submenu_router
-from .menu.dish import dish_router
+
+from apps.api.menu.dish_router import dish_router
+from apps.api.menu.menu_router import menu_router
+from apps.api.menu.submenu_router import submenu_router
 
 api_router = APIRouter()
 

@@ -1,5 +1,6 @@
-import pytest
 from typing import Any
+
+import pytest
 
 
 @pytest.fixture
@@ -39,7 +40,7 @@ def submenu_patch_data() -> dict[str, str]:
 
 
 @pytest.fixture
-def dish_post_data_1() -> dict[str, str]:
+def dish_post_data_1() -> dict[str, Any]:
     """Фикстура добавления блюда"""
     return {
         'title': 'Dish 1',
@@ -49,7 +50,7 @@ def dish_post_data_1() -> dict[str, str]:
 
 
 @pytest.fixture
-def dish_post_data_2() -> dict[str, str]:
+def dish_post_data_2() -> dict[str, Any]:
     """Фикстура добавления блюда"""
     return {
         'title': 'Dish 2',
@@ -59,7 +60,7 @@ def dish_post_data_2() -> dict[str, str]:
 
 
 @pytest.fixture
-def dish_patch_data() -> dict[str, str]:
+def dish_patch_data() -> dict[str, Any]:
     """Фикстура обновления блюда"""
     return {
         'title': 'Dish 1 updated',

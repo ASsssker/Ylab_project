@@ -1,22 +1,21 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm.exc import FlushError, NoResultFound
-from uuid import UUID
-from apps.menu.schema import MenuRead, MenuUpdate, MenuCreate
-from apps.api.url_config import PREFIX_LINK, MENUS_LINK, MENU_LINK
-from apps.menu.services.menu import MenuService
 
+from apps.api.url_config import MENU_LINK, MENUS_LINK, PREFIX_LINK
+from apps.menu.schema import MenuCreate, MenuRead, MenuUpdate
+from apps.menu.services.menu_service import MenuService
 
 menu_router = APIRouter(prefix=PREFIX_LINK)
 
 
 @menu_router.get(MENUS_LINK, status_code=200, response_model=list[MenuRead])
-async def get_menus(service: MenuService = Depends()) -> list[MenuRead]:
+async def get_menus(service: MenuService = Depends()) -> list:
     """Получение списка меню."""
     return await service.get_all()
 
 
 @menu_router.post(MENUS_LINK, status_code=201, response_model=MenuRead)
-async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> MenuRead:
+async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> dict:
     """Добавление нового меню."""
     try:
         return await service.add(model_data=menu)
@@ -25,7 +24,7 @@ async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> MenuR
 
 
 @menu_router.get(MENU_LINK, status_code=200, response_model=MenuRead)
-async def get_menu(menu_id: UUID, service: MenuService = Depends()) -> MenuRead:
+async def get_menu(menu_id: str, service: MenuService = Depends()) -> dict:
     """Получение конкретного меню."""
     try:
         return await service.get_one(menu_id=menu_id)
@@ -34,7 +33,7 @@ async def get_menu(menu_id: UUID, service: MenuService = Depends()) -> MenuRead:
 
 
 @menu_router.patch(MENU_LINK, status_code=200, response_model=MenuRead)
-async def update_menu(menu_id: UUID, updated_menu: MenuUpdate, service: MenuService = Depends()) -> MenuRead:
+async def update_menu(menu_id: str, updated_menu: MenuUpdate, service: MenuService = Depends()) -> dict:
     """Изменение меню по id."""
     try:
         return await service.update(menu_id=menu_id, update_data=updated_menu)
@@ -45,7 +44,7 @@ async def update_menu(menu_id: UUID, updated_menu: MenuUpdate, service: MenuServ
 
 
 @menu_router.delete(MENU_LINK, status_code=200)
-async def delete_menu(menu_id: UUID, service: MenuService = Depends()):
+async def delete_menu(menu_id: str, service: MenuService = Depends()) -> None:
     """Удаление меню по id."""
     try:
         await service.delete(menu_id=menu_id)

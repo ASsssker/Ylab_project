@@ -1,14 +1,17 @@
 from http import HTTPStatus
-from httpx import AsyncClient
 from typing import Any
-from apps.api.menu.menu import post_menu, delete_menu, get_menus
-from apps.api.menu.submenu import (
+
+from httpx import AsyncClient
+
+from apps.api.menu.menu_router import delete_menu, get_menus, post_menu
+from apps.api.menu.submenu_router import (
+    delete_submenu,
     get_submenu,
     get_submenus,
-    update_submenu,
     post_submenu,
-    delete_submenu
+    update_submenu,
 )
+
 from .utils import reverse
 
 
@@ -27,7 +30,7 @@ async def test_post_menu(menu_post_data: dict[str, str], saved_data: dict[str, A
     saved_data['menu'] = response_data
 
 
-async def test_submenu_list_is_empty(saved_data: dict[str, str], ac: AsyncClient):
+async def test_submenu_list_is_empty(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка получения пустого списка подменю."""
     menu = saved_data['menu']
     response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
@@ -35,7 +38,7 @@ async def test_submenu_list_is_empty(saved_data: dict[str, str], ac: AsyncClient
     assert response.json() == [], 'В ответе непустой список'
 
 
-async def test_post_submenu(saved_data: dict[str, str], submenu_post_data: dict[str, str], ac: AsyncClient):
+async def test_post_submenu(saved_data: dict[str, Any], submenu_post_data: dict[str, str], ac: AsyncClient):
     """Проверка добавления подменю."""
     menu = saved_data['menu']
     response = await ac.post(reverse(post_submenu, menu_id=menu['id']), json=submenu_post_data)
@@ -50,7 +53,7 @@ async def test_post_submenu(saved_data: dict[str, str], submenu_post_data: dict[
     saved_data['submenu'] = response_data
 
 
-async def test_submenu_list_is_not_empty(saved_data: dict[str, str], ac: AsyncClient):
+async def test_submenu_list_is_not_empty(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка получения списка подменю после добавления записи."""
     menu = saved_data['menu']
     response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
@@ -58,7 +61,7 @@ async def test_submenu_list_is_not_empty(saved_data: dict[str, str], ac: AsyncCl
     assert response.json() != [], 'В ответе непустой список'
 
 
-async def test_get_specific_submenu(saved_data: dict[str, str], ac: AsyncClient):
+async def test_get_specific_submenu(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка получения конкретного подменю."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
@@ -72,7 +75,7 @@ async def test_get_specific_submenu(saved_data: dict[str, str], ac: AsyncClient)
     assert response_data['description'] == submenu['description'], 'Описание подменю не соответствует ожидаемому'
 
 
-async def test_update_submenu(saved_data: dict[str, str], submenu_patch_data, ac: AsyncClient):
+async def test_update_submenu(saved_data: dict[str, Any], submenu_patch_data, ac: AsyncClient):
     """Проверка обновления подменю."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.patch(reverse(update_submenu, menu_id=menu['id'], submenu_id=submenu['id']), json=submenu_patch_data)
@@ -87,7 +90,7 @@ async def test_update_submenu(saved_data: dict[str, str], submenu_patch_data, ac
     saved_data['submenu'] = response_data
 
 
-async def test_get_updated_menu(saved_data: dict[str, str], ac: AsyncClient):
+async def test_get_updated_menu(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка получения подменю после обновления."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
@@ -101,14 +104,14 @@ async def test_get_updated_menu(saved_data: dict[str, str], ac: AsyncClient):
     assert response_data['description'] == submenu['description'], 'Описание подменю не соответствует ожидаемому'
 
 
-async def test_delete_submenu(saved_data: dict[str, str], ac: AsyncClient):
+async def test_delete_submenu(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка удаления подменю."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.delete(reverse(delete_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
     assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
 
 
-async def test_submenu_list_is_empty_after_delete(saved_data: dict[str, str], ac: AsyncClient):
+async def test_submenu_list_is_empty_after_delete(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка получения пустого списка подменю."""
     menu = saved_data['menu']
     response = await ac.get(reverse(get_submenus, menu_id=menu['id']))
@@ -116,7 +119,7 @@ async def test_submenu_list_is_empty_after_delete(saved_data: dict[str, str], ac
     assert response.json() == [], 'В ответе непустой список'
 
 
-async def test_get_specific_submenu_after_delete(saved_data: dict[str, str], ac: AsyncClient):
+async def test_get_specific_submenu_after_delete(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка получения конкретного подменю после удаления."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.get(reverse(get_submenu, menu_id=menu['id'], submenu_id=submenu['id']))
@@ -124,7 +127,7 @@ async def test_get_specific_submenu_after_delete(saved_data: dict[str, str], ac:
     assert response.json()['detail'] == 'submenu not found', 'Сообщение об ошибке не соответствует ожидаемому'
 
 
-async def test_delete_menu(saved_data: dict[str, str], ac: AsyncClient):
+async def test_delete_menu(saved_data: dict[str, Any], ac: AsyncClient):
     """Проверка удаления данных в меню."""
     menu = saved_data['menu']
     response = await ac.delete(reverse(delete_menu, menu_id=menu['id']))

@@ -10,7 +10,6 @@ class DatabaseSettings(BaseSettings):
 
     REDIS_HOST: str
 
-
     @property
     def database_url_asyncpg(self):
         return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'

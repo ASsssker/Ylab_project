@@ -1,6 +1,7 @@
-from pydantic import BaseModel, ConfigDict
 from decimal import Decimal
 from uuid import UUID
+
+from pydantic import BaseModel, ConfigDict
 
 
 class Base(BaseModel):
@@ -11,47 +12,47 @@ class Base(BaseModel):
 class MenuRead(Base):
     model_config = ConfigDict(from_attributes=True)
     id: str | UUID
-    submenus_count: int = 0
-    dishes_count: int = 0
+    submenus_count: int | None = None
+    dishes_count: int | None = None
 
 
 class MenuCreate(Base):
     pass
 
 
-class MenuUpdate(Base):
-    title: str = None
-    description: str = None
+class MenuUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
 
 
 class SubmenuRead(Base):
     model_config = ConfigDict(from_attributes=True)
-    id: str | UUID
-    menu_id: str | UUID
-    dishes_count: int = 0
+    id: str
+    menu_id: str
+    dishes_count: int | None = None
 
 
 class SubmenuCreate(Base):
     pass
 
 
-class SubmenuUpdate(Base):
-    title: str = None
-    description: str = None
+class SubmenuUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
 
 
 class DishRead(Base):
     model_config = ConfigDict(from_attributes=True)
-    id: str | UUID
-    submenu_id: str | UUID
+    id: str
+    submenu_id: str
     price: str | Decimal
 
 
 class DishCreate(Base):
-    price: Decimal
+    price: str | Decimal
 
 
-class DishUpdate(Base):
-    title: str = None
-    description: str = None
-    price: Decimal
+class DishUpdate(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    price: str | Decimal | None = None

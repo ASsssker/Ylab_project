@@ -1,12 +1,12 @@
+from pydantic import BaseModel
 from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import FlushError, NoResultFound
-from pydantic import BaseModel
-from uuid import UUID
+
 from db.db_init import Base
 
 
-async def check_exist_and_return(session: AsyncSession, object_id: UUID, model: Base):
+async def check_exist_and_return(session: AsyncSession, object_id: str, model: type[Base]) -> Base:
     """Проверка существования объекта в базе данных."""
     query = select(model).where(model.id == object_id)
     exists_object = await session.scalar(query)
@@ -18,8 +18,8 @@ async def check_exist_and_return(session: AsyncSession, object_id: UUID, model: 
 async def check_unique(
         session: AsyncSession,
         obj: BaseModel,
-        model: Base,
-        obj_id: UUID | None = None,
+        model: type[Base],
+        obj_id: str | None = None,
 ) -> None:
     """Проверка уникальности объекта"""
     if obj_id:
