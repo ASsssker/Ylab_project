@@ -20,3 +20,4 @@
  `docker compose -f docker-compose-test.yml up -d && docker logs --follow app && docker compose down -v
 `
 4. Результаты прохождения тестов будут выведены в терминал
+5. Реализация функции `reverse` лежит в `tests/utils`
