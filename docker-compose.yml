@@ -12,6 +12,19 @@ services:
       timeout: 30s
       retries: 3
 
+  redis:
+    image: redis:latest
+    restart: always
+    expose:
+      - "6379"
+    env_file:
+      - .env.db
+    healthcheck:
+      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
   app:
     build: .
     restart: always
@@ -21,4 +34,6 @@ services:
       - .env.db
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy

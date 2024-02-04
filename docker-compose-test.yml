@@ -8,9 +8,22 @@ services:
       - .env.test
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-U", "${POSTGRES_USER}"]
-      interval: 10s
+      interval: 5s
       timeout: 30s
       retries: 3
+
+  redis:
+    image: redis:latest
+    restart: always
+    expose:
+      - "6379"
+    env_file:
+      - .env.test
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
 
   app:
     build: .
@@ -20,5 +33,7 @@ services:
       - .env.test
     depends_on:
       db:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     command: sh -c "pytest"
