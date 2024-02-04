@@ -28,11 +28,16 @@ class DatabaseTestSettings(BaseSettings):
     POSTGRES_PASSWORD: str
     POSTGRES_DB: str
 
+    REDIS_HOST: str
+
     @property
     def database_url_asyncpg(self):
         return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
 
-    # model_config = SettingsConfigDict(env_file='.env.test')
+    @property
+    def cache_url(self):
+        return f'redis://{self.REDIS_HOST}'
+
     model_config = SettingsConfigDict(env_file='.env.test')
 
 
