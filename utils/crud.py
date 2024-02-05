@@ -36,11 +36,9 @@ class AbstractCrudRepository(ABC):
 
 
 class SQLAlchemyCrud(AbstractCrudRepository):
-
-    model: type[Base] = Base
-
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, model: Base):
         self.session = session
+        self.model = model
 
     async def get_record(self, record_id: str, *args, **kwargs) -> dict:
         record = (await self.session.execute(

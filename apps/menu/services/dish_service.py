@@ -8,8 +8,7 @@ from utils.services import BaseService
 
 class DishService(BaseService):
     def __init__(self, crud_repo: DishCrud = Depends(), cache_repo: DishCache = Depends()) -> None:
-        self.crud_repo = crud_repo
-        self.cache_repo = cache_repo
+        super().__init__(crud_repo=crud_repo, cache_repo=cache_repo)
 
     async def get_one(self, menu_id: str, submenu_id: str, dish_id: str) -> dict:
         return await super().get_one(record_id=dish_id, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)

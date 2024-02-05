@@ -9,11 +9,8 @@ from utils.crud import SQLAlchemyCrud
 
 
 class DishCrud(SQLAlchemyCrud):
-
-    model: type[Dish] = Dish
-
-    def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
-        self.session = session
+    def __init__(self, session: AsyncSession = Depends(get_session), model=Dish) -> None:
+        super().__init__(session=session, model=model)
 
     async def get_records(self, parent_record_id: str, *args, **kwargs) -> list:
         """Получение списка блюд."""

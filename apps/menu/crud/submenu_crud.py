@@ -10,11 +10,8 @@ from utils.crud import SQLAlchemyCrud
 
 
 class SubmenuCrud(SQLAlchemyCrud):
-
-    model: type[Submenu] = Submenu
-
-    def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
-        self.session = session
+    def __init__(self, session: AsyncSession = Depends(get_session), model=Submenu) -> None:
+        super().__init__(session=session, model=model)
 
     async def get_records(self, parent_record_id: str, *args, **kwargs) -> list:
         """Получение списка подменю."""

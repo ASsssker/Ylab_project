@@ -8,7 +8,7 @@ from utils.cache import CacheBaseRepository
 
 class MenuCache(CacheBaseRepository):
     def __init__(self, cacher: Redis = Depends(get_cache)) -> None:
-        self.cacher = cacher
+        super().__init__(cacher=cacher)
         self.endpoint_list_url: str = MENUS_LINK
         self.endpoint_detail_url: str = MENU_LINK
 

@@ -10,11 +10,8 @@ from utils.crud import SQLAlchemyCrud
 
 
 class MenuCrud(SQLAlchemyCrud):
-
-    model: type[Menu] = Menu
-
-    def __init__(self, session: AsyncSession = Depends(get_session)) -> None:
-        self.session = session
+    def __init__(self, session: AsyncSession = Depends(get_session), model=Menu) -> None:
+        super().__init__(session=session, model=model)
 
     async def get_records(self, *args, **kwargs) -> list:
         """Получение списка меню."""

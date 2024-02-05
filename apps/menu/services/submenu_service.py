@@ -8,8 +8,7 @@ from utils.services import BaseService
 
 class SubmenuService(BaseService):
     def __init__(self, crud_repo: SubmenuCrud = Depends(), cache_repo: SubmenuCache = Depends()) -> None:
-        self.crud_repo = crud_repo
-        self.cache_repo = cache_repo
+        super().__init__(crud_repo=crud_repo, cache_repo=cache_repo)
 
     async def get_one(self, menu_id: str, submenu_id: str) -> dict:
         return await super().get_one(record_id=submenu_id, menu_id=menu_id, submenu_id=submenu_id)
