@@ -23,6 +23,8 @@ async def post_dish(menu_id: str, submenu_id: str, dish: DishCreate, service: Di
         return await service.add(model_data=dish, menu_id=menu_id, submenu_id=submenu_id)
     except FlushError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.args[0])
+    except NoResultFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
 @dish_router.get(DISH_LINK, status_code=status.HTTP_200_OK, response_model=DishRead)

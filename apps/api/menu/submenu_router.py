@@ -21,6 +21,8 @@ async def post_submenu(menu_id: str, submenu: SubmenuCreate, service: SubmenuSer
         return await service.add(model_data=submenu, menu_id=menu_id)
     except FlushError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=e.args[0])
+    except NoResultFound as e:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
 @submenu_router.get(SUBMENU_LINK, status_code=status.HTTP_200_OK, response_model=SubmenuRead)

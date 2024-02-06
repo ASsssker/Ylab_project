@@ -4,9 +4,10 @@ from sqlalchemy import distinct, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import NoResultFound
 
-from apps.menu.models import Dish, Submenu
+from apps.menu.models import Dish, Menu, Submenu
 from db.db_init import get_session
 from utils.crud import SQLAlchemyCrud
+from utils.utils import check_exist_and_return
 
 
 class SubmenuCrud(SQLAlchemyCrud):
@@ -46,6 +47,7 @@ class SubmenuCrud(SQLAlchemyCrud):
         return serializer
 
     async def add(self, model_data: BaseModel, *args, **kwargs) -> dict[str, str]:
+        await check_exist_and_return(session=self.session, object_id=kwargs['menu_id'], model=Menu)
         current_submenu = await super().add(model_data=model_data, menu_id=kwargs['menu_id'])
         return current_submenu
 

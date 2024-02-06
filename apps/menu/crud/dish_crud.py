@@ -5,9 +5,10 @@ from pydantic import BaseModel
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from apps.menu.models import Dish
+from apps.menu.models import Dish, Submenu
 from db.db_init import get_session
 from utils.crud import SQLAlchemyCrud
+from utils.utils import check_exist_and_return
 
 
 class DishCrud(SQLAlchemyCrud):
@@ -29,6 +30,7 @@ class DishCrud(SQLAlchemyCrud):
         return await super().get_record(record_id, *args, **kwargs)
 
     async def add(self, model_data: BaseModel, *args, **kwargs) -> dict[str, str | Decimal]:
+        await check_exist_and_return(session=self.session, object_id=kwargs['submenu_id'], model=Submenu)
         current_dish = await super().add(model_data=model_data, submenu_id=kwargs['submenu_id'])
         return current_dish
 
