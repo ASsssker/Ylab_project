@@ -13,10 +13,10 @@ class MenuService(BaseService):
     async def get_one(self, menu_id: str) -> dict[str, str | int]:
         return await super().get_one(record_id=menu_id, menu_id=menu_id)
 
-    async def get_all(self) -> list[dict[str, int]]:
+    async def get_all(self) -> list[dict[str, str | int] | None]:
         return await super().get_all()
 
-    async def add(self, model_data: MenuCreate) -> dict[str, str]:
+    async def add(self, model_data: MenuCreate) -> dict[str, str | int]:
         return await super().add(model_data=model_data)
 
     async def update(self, menu_id: str, update_data: MenuUpdate) -> dict[str, str]:

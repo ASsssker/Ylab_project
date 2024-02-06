@@ -15,7 +15,7 @@ class DishService(BaseService):
     async def get_one(self, menu_id: str, submenu_id: str, dish_id: str) -> dict[str, str | Decimal]:
         return await super().get_one(record_id=dish_id, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
 
-    async def get_all(self, menu_id: str, submenu_id: str) -> list[dict[str, str | Decimal]]:
+    async def get_all(self, menu_id: str, submenu_id: str) -> list[dict[str, str | Decimal] | None]:
         return await super().get_all(parent_record_id=submenu_id, menu_id=menu_id, submenu_id=submenu_id)
 
     async def add(self, model_data: DishCreate, menu_id: str, submenu_id: str) -> dict[str, str | Decimal]:

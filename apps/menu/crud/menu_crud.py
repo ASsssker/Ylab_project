@@ -13,7 +13,7 @@ class MenuCrud(SQLAlchemyCrud):
     def __init__(self, session: AsyncSession = Depends(get_session), model=Menu) -> None:
         super().__init__(session=session, model=model)
 
-    async def get_records(self, *args, **kwargs) -> list[dict[str, str | int]]:
+    async def get_records(self, *args, **kwargs) -> list[dict[str, str | int] | None]:
         """Получение списка меню."""
         submenus_count_alias = func.count(distinct(Submenu.id)).label('submenus_count')
         dishes_count_alias = func.count(distinct(Dish.id)).label('dishes_count')

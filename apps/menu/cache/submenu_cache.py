@@ -1,3 +1,5 @@
+import json
+
 from aioredis import Redis
 from fastapi import Depends
 
@@ -22,15 +24,19 @@ class SubmenuCache(CacheBaseRepository):
         url = self.endpoint_list_url.format(menu_id=menu_id)
         await self.set(item=item, url=url)
 
-    async def get_detail(self, menu_id: str, submenu_id: str, *args, **kwargs) -> list[dict[str, str]] | dict[str, str] | None:
+    async def get_detail(self, menu_id: str, submenu_id: str, *args, **kwargs) -> dict[str, str | int] | None:
         url = self.endpoint_detail_url.format(menu_id=menu_id, submenu_id=submenu_id)
-        item = await self.get(url=url)
-        return item
+        item = await self.cacher.get(url)
+        if item:
+            return json.loads(url)
+        return None
 
-    async def get_list(self, menu_id: str, *args, **kwargs) -> list[dict[str, str]] | dict[str, str] | None:
+    async def get_list(self, menu_id: str, *args, **kwargs) -> list[dict[str, str | int] | None] | None:
         url = self.endpoint_list_url.format(menu_id=menu_id)
-        item = await self.get(url=url)
-        return item
+        item = await self.cacher.get(url)
+        if item:
+            return json.loads(item)
+        return None
 
     async def clear_after_add(self, menu_id: str, *args, **kwargs) -> None:
         url_parent_list = self.parent_endpoint_list

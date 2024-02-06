@@ -1,3 +1,6 @@
+import json
+from decimal import Decimal
+
 from aioredis import Redis
 from fastapi import Depends
 
@@ -18,19 +21,23 @@ class DishCache(CacheBaseRepository):
         url = self.endpoint_detail_url.format(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
         await self.set(item=item, url=url)
 
-    async def set_list(self, item: list, menu_id: str, submenu_id: str, *args, **kwargs):
+    async def set_list(self, item: list, menu_id: str, submenu_id: str, *args, **kwargs) -> None:
         url = self.endpoint_list_url.format(menu_id=menu_id, submenu_id=submenu_id)
         await self.set(item=item, url=url)
 
-    async def get_detail(self, menu_id: str, submenu_id: str, dish_id: str, *args, **kwargs) -> list[dict[str, str]] | dict[str, str] | None:
+    async def get_detail(self, menu_id: str, submenu_id: str, dish_id: str, *args, **kwargs) -> dict[str, str | Decimal] | None:
         url = self.endpoint_detail_url.format(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
-        item = await self.get(url=url)
-        return item
+        item = await self.cacher.get(url)
+        if item:
+            return json.loads(item)
+        return None
 
-    async def get_list(self, menu_id: str, submenu_id: str, *args, **kwargs) -> list[dict[str, str]] | dict[str, str] | None:
+    async def get_list(self, menu_id: str, submenu_id: str, *args, **kwargs) -> list[dict[str, str | Decimal] | None] | None:
         url = self.endpoint_list_url.format(menu_id=menu_id, submenu_id=submenu_id)
-        item = await self.get(url=url)
-        return item
+        item = await self.cacher.get(url)
+        if item:
+            return json.loads(item)
+        return None
 
     async def clear_after_add(self, menu_id: str, submenu_id: str, *args, **kwargs) -> None:
         url_entry_list = self.entry_endpoint_list_url

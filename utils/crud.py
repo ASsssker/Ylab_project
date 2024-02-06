@@ -20,7 +20,7 @@ class AbstractCrudRepository(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_records(self, *args, **kwargs) -> list[dict[str, Any]]:
+    async def get_records(self, *args, **kwargs) -> list[dict[str, Any] | None]:
         raise NotImplementedError
 
     @abstractmethod
@@ -49,7 +49,7 @@ class SQLAlchemyCrud(AbstractCrudRepository):
             raise NoResultFound(f'{self.model.__name__.lower()} not found')
         return record.to_read_mode()
 
-    async def get_records(self, *args, **kwargs) -> list[dict[str, Any]]:
+    async def get_records(self, *args, **kwargs) -> list[dict[str, Any] | None]:
         records = (await self.session.execute(
             select(self.model).where(self.model.id == id)
         )).scalars()

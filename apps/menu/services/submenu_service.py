@@ -13,10 +13,10 @@ class SubmenuService(BaseService):
     async def get_one(self, menu_id: str, submenu_id: str) -> dict[str, str | int]:
         return await super().get_one(record_id=submenu_id, menu_id=menu_id, submenu_id=submenu_id)
 
-    async def get_all(self, menu_id: str) -> list[dict[str, str | int]]:
+    async def get_all(self, menu_id: str) -> list[dict[str, str | int] | None]:
         return await super().get_all(parent_record_id=menu_id, menu_id=menu_id)
 
-    async def add(self, model_data: SubmenuCreate, menu_id: str) -> dict[str, str]:
+    async def add(self, model_data: SubmenuCreate, menu_id: str) -> dict[str, str | int]:
         return await super().add(menu_id=menu_id, model_data=model_data)
 
     async def update(self, menu_id: str, submenu_id: str, update_data: SubmenuUpdate) -> dict[str, str]:

@@ -15,7 +15,7 @@ class AbstractService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all(self, *args, **kwargs) -> list[dict[str, Any]]:
+    async def get_all(self, *args, **kwargs) -> list[dict[str, Any] | None]:
         raise NotImplementedError
 
     @abstractmethod
@@ -44,7 +44,7 @@ class BaseService(AbstractService):
         await self.cache_repo.set_detail(item, *args, **kwargs)
         return item
 
-    async def get_all(self, *args, **kwargs) -> list[dict[str, Any]]:
+    async def get_all(self, *args, **kwargs) -> list[dict[str, Any] | None]:
         cache = await self.cache_repo.get_list(*args, **kwargs)
         if cache:
             return cache

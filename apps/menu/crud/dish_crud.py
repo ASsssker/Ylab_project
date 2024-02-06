@@ -14,7 +14,7 @@ class DishCrud(SQLAlchemyCrud):
     def __init__(self, session: AsyncSession = Depends(get_session), model=Dish) -> None:
         super().__init__(session=session, model=model)
 
-    async def get_records(self, parent_record_id: str, *args, **kwargs) -> list[dict[str, str | Decimal]]:
+    async def get_records(self, parent_record_id: str, *args, **kwargs) -> list[dict[str, str | Decimal] | None]:
         """Получение списка блюд."""
         dishes_query = (await self.session.execute(
             select(self.model).where(self.model.submenu_id == parent_record_id)

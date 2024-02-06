@@ -9,13 +9,13 @@ menu_router = APIRouter(prefix=PREFIX_LINK, tags=['Меню'])
 
 
 @menu_router.get(MENUS_LINK, status_code=status.HTTP_200_OK, response_model=list[MenuRead])
-async def get_menus(service: MenuService = Depends()) -> list:
+async def get_menus(service: MenuService = Depends()) -> list[dict[str, str | int] | None]:
     """Получение списка меню."""
     return await service.get_all()
 
 
 @menu_router.post(MENUS_LINK, status_code=status.HTTP_201_CREATED, response_model=MenuRead)
-async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> dict:
+async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> dict[str, str | int]:
     """Добавление нового меню."""
     try:
         return await service.add(model_data=menu)
@@ -24,7 +24,7 @@ async def post_menu(menu: MenuCreate, service: MenuService = Depends()) -> dict:
 
 
 @menu_router.get(MENU_LINK, status_code=status.HTTP_200_OK, response_model=MenuRead)
-async def get_menu(menu_id: str, service: MenuService = Depends()) -> dict:
+async def get_menu(menu_id: str, service: MenuService = Depends()) -> dict[str, str | int]:
     """Получение конкретного меню."""
     try:
         return await service.get_one(menu_id=menu_id)
@@ -33,7 +33,7 @@ async def get_menu(menu_id: str, service: MenuService = Depends()) -> dict:
 
 
 @menu_router.patch(MENU_LINK, status_code=status.HTTP_200_OK, response_model=MenuRead, response_model_exclude_none=True)
-async def update_menu(menu_id: str, updated_menu: MenuUpdate, service: MenuService = Depends()) -> dict:
+async def update_menu(menu_id: str, updated_menu: MenuUpdate, service: MenuService = Depends()) -> dict[str, str]:
     """Изменение меню по id."""
     try:
         return await service.update(menu_id=menu_id, update_data=updated_menu)
