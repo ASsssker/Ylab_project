@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from utils.cache import CacheBaseRepository
 from utils.crud import SQLAlchemyCrud
@@ -10,23 +11,23 @@ class AbstractService(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    async def get_one(self, *args, **kwargs):
+    async def get_one(self, *args, **kwargs) -> dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_all(self, *args, **kwargs):
+    async def get_all(self, *args, **kwargs) -> list[dict[str, Any]]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(self, *args, **kwargs):
+    async def add(self, *args, **kwargs) -> dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, *args, **kwargs):
+    async def update(self, *args, **kwargs) -> dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(self, *args, **kwargs):
+    async def delete(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
 
@@ -35,7 +36,7 @@ class BaseService(AbstractService):
         self.crud_repo = crud_repo
         self.cache_repo = cache_repo
 
-    async def get_one(self, *args, **kwargs) -> dict:
+    async def get_one(self, *args, **kwargs) -> dict[str, Any]:
         cache = await self.cache_repo.get_detail(*args, **kwargs)
         if cache:
             return cache
@@ -43,7 +44,7 @@ class BaseService(AbstractService):
         await self.cache_repo.set_detail(item, *args, **kwargs)
         return item
 
-    async def get_all(self, *args, **kwargs) -> list:
+    async def get_all(self, *args, **kwargs) -> list[dict[str, Any]]:
         cache = await self.cache_repo.get_list(*args, **kwargs)
         if cache:
             return cache
@@ -51,12 +52,12 @@ class BaseService(AbstractService):
         await self.cache_repo.set_list(item, *args, **kwargs)
         return item
 
-    async def add(self, *args, **kwargs) -> dict:
+    async def add(self, *args, **kwargs) -> dict[str, Any]:
         item = await self.crud_repo.add(*args, **kwargs)
         await self.cache_repo.clear_after_add(*args, **kwargs)
         return item
 
-    async def update(self, *args, **kwargs) -> dict:
+    async def update(self, *args, **kwargs) -> dict[str, Any]:
         item = await self.crud_repo.update(*args, **kwargs)
         await self.cache_repo.clear_after_update(*args, **kwargs)
         return item
