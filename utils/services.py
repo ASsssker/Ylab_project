@@ -6,7 +6,7 @@ from utils.crud import SQLAlchemyCrud
 
 class AbstractService(ABC):
     @abstractmethod
-    def __init__(self):
+    def __init__(self) -> None:
         raise NotImplementedError
 
     @abstractmethod

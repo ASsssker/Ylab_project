@@ -13,7 +13,7 @@ class SubmenuCrud(SQLAlchemyCrud):
     def __init__(self, session: AsyncSession = Depends(get_session), model=Submenu) -> None:
         super().__init__(session=session, model=model)
 
-    async def get_records(self, parent_record_id: str, *args, **kwargs) -> list:
+    async def get_records(self, parent_record_id: str, *args, **kwargs) -> list[dict[str, str | int]]:
         """Получение списка подменю."""
         submenus_query = (await self.session.execute(
             select(self.model, func.count(distinct(Dish.id)).label('dishes_count'))
@@ -29,7 +29,7 @@ class SubmenuCrud(SQLAlchemyCrud):
             submenu_list.append(serializer)
         return submenu_list
 
-    async def get_record(self, record_id: str, *args, **kwargs) -> dict:
+    async def get_record(self, record_id: str, *args, **kwargs) -> dict[str, str | int]:
         """Поолучение конкретного подменю."""
         current_submenu = (await self.session.execute(
             select(self.model, func.count(distinct(Dish.id)).label('dishes_count'))
@@ -45,6 +45,9 @@ class SubmenuCrud(SQLAlchemyCrud):
         serializer.update(submenu_serializer)
         return serializer
 
-    async def add(self, model_data: BaseModel, *args, **kwargs) -> dict:
+    async def add(self, model_data: BaseModel, *args, **kwargs) -> dict[str, str]:
         current_submenu = await super().add(model_data=model_data, menu_id=kwargs['menu_id'])
         return current_submenu
+
+    async def update(self, record_id: str, update_data: BaseModel, *args, **kwargs) -> dict[str, str]:
+        return await super().update(record_id, update_data, *args, **kwargs)

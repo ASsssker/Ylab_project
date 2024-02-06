@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from typing import Any
 
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -11,36 +12,36 @@ from utils.utils import check_exist_and_return, check_unique
 
 class AbstractCrudRepository(ABC):
     @abstractmethod
-    def __init__(self):
+    def __init__(self) -> None:
         pass
 
     @abstractmethod
-    async def get_record(self, *args, **kwargs):
+    async def get_record(self, *args, **kwargs) -> dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
-    async def get_records(self, *args, **kwargs):
+    async def get_records(self, *args, **kwargs) -> list[dict[str, Any]]:
         raise NotImplementedError
 
     @abstractmethod
-    async def add(self, *args, **kwargs):
+    async def add(self, *args, **kwargs) -> dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
-    async def update(self, *args, **kwargs):
+    async def update(self, *args, **kwargs) -> dict[str, Any]:
         raise NotImplementedError
 
     @abstractmethod
-    async def delete(self, *args, **kwargs):
+    async def delete(self, *args, **kwargs) -> None:
         raise NotImplementedError
 
 
 class SQLAlchemyCrud(AbstractCrudRepository):
-    def __init__(self, session: AsyncSession, model: Base):
+    def __init__(self, session: AsyncSession, model: Base) -> None:
         self.session = session
         self.model = model
 
-    async def get_record(self, record_id: str, *args, **kwargs) -> dict:
+    async def get_record(self, record_id: str, *args, **kwargs) -> dict[str, Any]:
         record = (await self.session.execute(
             select(self.model).where(self.model.id == record_id)
         )).scalar_one_or_none()
@@ -48,7 +49,7 @@ class SQLAlchemyCrud(AbstractCrudRepository):
             raise NoResultFound(f'{self.model.__name__.lower()} not found')
         return record.to_read_mode()
 
-    async def get_records(self, *args, **kwargs) -> list:
+    async def get_records(self, *args, **kwargs) -> list[dict[str, Any]]:
         records = (await self.session.execute(
             select(self.model).where(self.model.id == id)
         )).scalars()
@@ -59,7 +60,7 @@ class SQLAlchemyCrud(AbstractCrudRepository):
             record_list.append(serializer[f'{self.model.__name__}'].to_read_mode())
         return record_list
 
-    async def add(self, model_data: BaseModel, *args, **kwargs) -> dict:
+    async def add(self, model_data: BaseModel, *args, **kwargs) -> dict[str, Any]:
         try:
             await check_unique(
                 session=self.session,
@@ -75,7 +76,7 @@ class SQLAlchemyCrud(AbstractCrudRepository):
         await self.session.refresh(new_record)
         return new_record.to_read_mode()
 
-    async def update(self, record_id: str, update_data: BaseModel, *args, **kwargs) -> dict:
+    async def update(self, record_id: str, update_data: BaseModel, *args, **kwargs) -> dict[str, Any]:
         current_record = await check_exist_and_return(
             session=self.session,
             object_id=record_id,

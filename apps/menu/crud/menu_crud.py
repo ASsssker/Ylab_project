@@ -13,7 +13,7 @@ class MenuCrud(SQLAlchemyCrud):
     def __init__(self, session: AsyncSession = Depends(get_session), model=Menu) -> None:
         super().__init__(session=session, model=model)
 
-    async def get_records(self, *args, **kwargs) -> list:
+    async def get_records(self, *args, **kwargs) -> list[dict[str, str | int]]:
         """Получение списка меню."""
         submenus_count_alias = func.count(distinct(Submenu.id)).label('submenus_count')
         dishes_count_alias = func.count(distinct(Dish.id)).label('dishes_count')
@@ -31,7 +31,7 @@ class MenuCrud(SQLAlchemyCrud):
             menu_list.append(serializer)
         return menu_list
 
-    async def get_record(self, record_id: str, *args, **kwargs) -> dict:
+    async def get_record(self, record_id: str, *args, **kwargs) -> dict[str, str | int]:
         """Поолучение конкретного меню"""
         submenus_count_alias = func.count(distinct(Submenu.id)).label('submenus_count')
         dishes_count_alias = func.count(distinct(Dish.id)).label('dishes_count')
@@ -49,6 +49,9 @@ class MenuCrud(SQLAlchemyCrud):
         serializer.update(menu_serializer)
         return serializer
 
-    async def add(self, model_data: BaseModel, *args, **kwargs) -> dict:
+    async def add(self, model_data: BaseModel, *args, **kwargs) -> dict[str, str]:
         current_menu = await super().add(model_data=model_data)
         return current_menu
+
+    async def update(self, record_id: str, update_data: BaseModel, *args, **kwargs) -> dict[str, str]:
+        return await super().update(record_id, update_data, *args, **kwargs)
