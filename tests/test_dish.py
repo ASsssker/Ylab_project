@@ -46,7 +46,7 @@ async def test_post_submenu(submenu_post_data: dict[str, str], saved_data: dict[
     saved_data['submenu'] = response_data
 
 
-async def test_all_dish_list_is_emty(saved_data: dict[str, Any], ac: AsyncClient):
+async def test_all_dish_list_is_emty(saved_data: dict[str, Any], ac: AsyncClient) -> None:
     """Проверка получения пустого списка блюд."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.get(reverse(get_dishes, menu_id=menu['id'], submenu_id=submenu['id']))
@@ -54,7 +54,7 @@ async def test_all_dish_list_is_emty(saved_data: dict[str, Any], ac: AsyncClient
     assert response.json() == [], 'В ответе непустой список'
 
 
-async def test_post_dish(dish_post_data_1: dict[str, Any], saved_data: dict[str, Any], ac: AsyncClient):
+async def test_post_dish(dish_post_data_1: dict[str, Any], saved_data: dict[str, Any], ac: AsyncClient) -> None:
     """Проверка добавления блюда."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.post(reverse(post_dish, menu_id=menu['id'], submenu_id=submenu['id']), json=dish_post_data_1)
@@ -71,7 +71,7 @@ async def test_post_dish(dish_post_data_1: dict[str, Any], saved_data: dict[str,
     saved_data['dish'] = response_data
 
 
-async def test_all_dish_list_is_not_empty(saved_data: dict[str, Any], ac: AsyncClient):
+async def test_all_dish_list_is_not_empty(saved_data: dict[str, Any], ac: AsyncClient) -> None:
     """Проверка получния списка блюд после добавления записи."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
     response = await ac.get(reverse(get_dishes, menu_id=menu['id'], submenu_id=submenu['id']))
@@ -79,7 +79,7 @@ async def test_all_dish_list_is_not_empty(saved_data: dict[str, Any], ac: AsyncC
     assert response.json() != [], 'В ответе пустой список'
 
 
-async def test_get_specific_dish(saved_data: dict[str, Any], ac: AsyncClient):
+async def test_get_specific_dish(saved_data: dict[str, Any], ac: AsyncClient) -> None:
     """Проверка получение конкретного блюда."""
     menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
     response = await ac.get(reverse(get_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
