@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm.exc import FlushError, NoResultFound
 
+from apps.api.menu.api_response_information import (
+    MENU_NOT_FOUND,
+    SUBMENU_NOT_FOUND,
+    VALUE_IS_EXIST,
+)
 from apps.api.url_config import PREFIX_LINK, SUBMENU_LINK, SUBMENUS_LINK
 from apps.menu.schema import SubmenuCreate, SubmenuRead, SubmenuUpdate
 from apps.menu.services.submenu_service import SubmenuService
@@ -8,13 +13,13 @@ from apps.menu.services.submenu_service import SubmenuService
 submenu_router = APIRouter(prefix=PREFIX_LINK, tags=['Подменю'])
 
 
-@submenu_router.get(SUBMENUS_LINK, status_code=status.HTTP_200_OK, response_model=list[SubmenuRead])
+@submenu_router.get(SUBMENUS_LINK, summary='Все подменю конкретного меню', status_code=status.HTTP_200_OK, response_model=list[SubmenuRead])
 async def get_submenus(menu_id: str, service: SubmenuService = Depends()) -> list[dict[str, str | int] | None]:
     """Получение списка подменю."""
     return await service.get_all(menu_id=menu_id)
 
 
-@submenu_router.post(SUBMENUS_LINK, status_code=status.HTTP_201_CREATED, response_model=SubmenuRead)
+@submenu_router.post(SUBMENUS_LINK, summary='Добавть подменю', status_code=status.HTTP_201_CREATED, response_model=SubmenuRead, responses={**MENU_NOT_FOUND, **VALUE_IS_EXIST})
 async def post_submenu(menu_id: str, submenu: SubmenuCreate, service: SubmenuService = Depends()) -> dict[str, str | int]:
     """Добавление нового подменю."""
     try:
@@ -25,7 +30,7 @@ async def post_submenu(menu_id: str, submenu: SubmenuCreate, service: SubmenuSer
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@submenu_router.get(SUBMENU_LINK, status_code=status.HTTP_200_OK, response_model=SubmenuRead)
+@submenu_router.get(SUBMENU_LINK, summary='Получить подменю', status_code=status.HTTP_200_OK, response_model=SubmenuRead, responses=SUBMENU_NOT_FOUND)
 async def get_submenu(menu_id: str, submenu_id: str, service: SubmenuService = Depends()) -> dict[str, str | int]:
     """Получение конкретного подменю."""
     try:
@@ -34,7 +39,7 @@ async def get_submenu(menu_id: str, submenu_id: str, service: SubmenuService = D
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@submenu_router.patch(SUBMENU_LINK, status_code=status.HTTP_200_OK, response_model=SubmenuRead, response_model_exclude_none=True)
+@submenu_router.patch(SUBMENU_LINK, summary='Обновить подменю', status_code=status.HTTP_200_OK, response_model=SubmenuRead, response_model_exclude_none=True, responses={**SUBMENU_NOT_FOUND, **VALUE_IS_EXIST})
 async def update_submenu(menu_id: str, submenu_id: str, updated_submenu: SubmenuUpdate, service: SubmenuService = Depends()) -> dict[str, str]:
     """Изменение подменю по id."""
     try:
@@ -45,7 +50,7 @@ async def update_submenu(menu_id: str, submenu_id: str, updated_submenu: Submenu
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@submenu_router.delete(SUBMENU_LINK, status_code=status.HTTP_200_OK)
+@submenu_router.delete(SUBMENU_LINK, summary='Удалить подменю', status_code=status.HTTP_200_OK, responses=SUBMENU_NOT_FOUND)
 async def delete_submenu(menu_id: str, submenu_id: str, service: SubmenuService = Depends()) -> None:
     """Удаление подменю по id."""
     try:

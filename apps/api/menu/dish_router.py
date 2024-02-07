@@ -3,6 +3,11 @@ from decimal import Decimal
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm.exc import FlushError, NoResultFound
 
+from apps.api.menu.api_response_information import (
+    DISH_NOT_FOUND,
+    SUBMENU_NOT_FOUND,
+    VALUE_IS_EXIST,
+)
 from apps.api.url_config import DISH_LINK, DISHES_LINK, PREFIX_LINK
 from apps.menu.schema import DishCreate, DishRead, DishUpdate
 from apps.menu.services.dish_service import DishService
@@ -10,13 +15,13 @@ from apps.menu.services.dish_service import DishService
 dish_router = APIRouter(prefix=PREFIX_LINK, tags=['Блюда'])
 
 
-@dish_router.get(DISHES_LINK, status_code=status.HTTP_200_OK, response_model=list[DishRead])
+@dish_router.get(DISHES_LINK, summary='Все блюда конкретного подменю', status_code=status.HTTP_200_OK, response_model=list[DishRead])
 async def get_dishes(menu_id: str, submenu_id: str, service: DishService = Depends()) -> list[dict[str, str | Decimal] | None]:
     """Получение списка блюд."""
     return await service.get_all(menu_id=menu_id, submenu_id=submenu_id)
 
 
-@dish_router.post(DISHES_LINK, status_code=status.HTTP_201_CREATED, response_model=DishRead)
+@dish_router.post(DISHES_LINK, summary='Добавить блюдо', status_code=status.HTTP_201_CREATED, response_model=DishRead, responses={**SUBMENU_NOT_FOUND, **VALUE_IS_EXIST})
 async def post_dish(menu_id: str, submenu_id: str, dish: DishCreate, service: DishService = Depends()) -> dict[str, str | Decimal]:
     """Добавление нового блюда."""
     try:
@@ -27,7 +32,7 @@ async def post_dish(menu_id: str, submenu_id: str, dish: DishCreate, service: Di
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@dish_router.get(DISH_LINK, status_code=status.HTTP_200_OK, response_model=DishRead)
+@dish_router.get(DISH_LINK, summary='Получить блюдо', status_code=status.HTTP_200_OK, response_model=DishRead, responses=DISH_NOT_FOUND)
 async def get_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishService = Depends()) -> dict[str, str | Decimal]:
     """Получение конкретного блюда."""
     try:
@@ -36,7 +41,7 @@ async def get_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishSer
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@dish_router.patch(DISH_LINK, status_code=status.HTTP_200_OK, response_model=DishRead, response_model_exclude_none=True)
+@dish_router.patch(DISH_LINK, summary='Обновить блюдо', status_code=status.HTTP_200_OK, response_model=DishRead, response_model_exclude_none=True, responses={**DISH_NOT_FOUND, **VALUE_IS_EXIST})
 async def update_dish(menu_id: str, submenu_id: str, dish_id: str, updated_dish: DishUpdate, service: DishService = Depends()) -> dict[str, str | Decimal]:
     """Изменение блюда по id."""
     try:
@@ -47,7 +52,7 @@ async def update_dish(menu_id: str, submenu_id: str, dish_id: str, updated_dish:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@dish_router.delete(DISH_LINK, status_code=status.HTTP_200_OK)
+@dish_router.delete(DISH_LINK, summary='Удалить блюдо', status_code=status.HTTP_200_OK, responses=DISH_NOT_FOUND)
 async def delete_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishService = Depends()) -> None:
     """Удаление блюда по id."""
     try:

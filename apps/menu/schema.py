@@ -10,7 +10,7 @@ class Base(BaseModel):
 
 
 class MenuRead(Base):
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True, )
     id: str | UUID
     submenus_count: int | None = None
     dishes_count: int | None = None

@@ -10,20 +10,40 @@
                 "tags": [
                     "Меню"
                 ],
-                "summary": "Get Menus",
+                "summary": "Получить все меню",
                 "description": "Получение списка меню.",
                 "operationId": "get_menus_api_v1_menus__get",
+                "parameters": [
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {
                                 "schema": {
+                                    "type": "array",
                                     "items": {
                                         "$ref": "#/components/schemas/MenuRead"
                                     },
-                                    "type": "array",
                                     "title": "Response Get Menus Api V1 Menus  Get"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation Error",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/HTTPValidationError"
                                 }
                             }
                         }
@@ -34,18 +54,28 @@
                 "tags": [
                     "Меню"
                 ],
-                "summary": "Post Menu",
+                "summary": "Добавить меню",
                 "description": "Добавление нового меню.",
                 "operationId": "post_menu_api_v1_menus__post",
+                "parameters": [
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
+                    }
+                ],
                 "requestBody": {
+                    "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "$ref": "#/components/schemas/MenuCreate"
                             }
                         }
-                    },
-                    "required": true
+                    }
                 },
                 "responses": {
                     "201": {
@@ -55,6 +85,14 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/MenuRead"
                                 }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Value already exists",
+                        "content": {
+                            "application/json": {
+                                "example": "value already exists"
                             }
                         }
                     },
@@ -76,7 +114,7 @@
                 "tags": [
                     "Меню"
                 ],
-                "summary": "Get Menu",
+                "summary": "Получить меню",
                 "description": "Получение конкретного меню.",
                 "operationId": "get_menu_api_v1_menus__menu_id___get",
                 "parameters": [
@@ -88,6 +126,14 @@
                             "type": "string",
                             "title": "Menu Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "responses": {
@@ -98,6 +144,14 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/MenuRead"
                                 }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Menu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "menu not found"
                             }
                         }
                     },
@@ -117,7 +171,7 @@
                 "tags": [
                     "Меню"
                 ],
-                "summary": "Update Menu",
+                "summary": "Обновть меню",
                 "description": "Изменение меню по id.",
                 "operationId": "update_menu_api_v1_menus__menu_id___patch",
                 "parameters": [
@@ -128,6 +182,14 @@
                         "schema": {
                             "type": "string",
                             "title": "Menu Id"
+                        }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
                         }
                     }
                 ],
@@ -152,6 +214,22 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Value already exists",
+                        "content": {
+                            "application/json": {
+                                "example": "value already exists"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Menu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "menu not found"
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -168,7 +246,7 @@
                 "tags": [
                     "Меню"
                 ],
-                "summary": "Delete Menu",
+                "summary": "Удалить меню",
                 "description": "Удаление меню по id.",
                 "operationId": "delete_menu_api_v1_menus__menu_id___delete",
                 "parameters": [
@@ -180,6 +258,14 @@
                             "type": "string",
                             "title": "Menu Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "responses": {
@@ -188,6 +274,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Menu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "menu not found"
                             }
                         }
                     },
@@ -209,7 +303,7 @@
                 "tags": [
                     "Подменю"
                 ],
-                "summary": "Get Submenus",
+                "summary": "Все подменю конкретного меню",
                 "description": "Получение списка подменю.",
                 "operationId": "get_submenus_api_v1_menus__menu_id__submenus__get",
                 "parameters": [
@@ -220,6 +314,14 @@
                         "schema": {
                             "type": "string",
                             "title": "Menu Id"
+                        }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
                         }
                     }
                 ],
@@ -254,7 +356,7 @@
                 "tags": [
                     "Подменю"
                 ],
-                "summary": "Post Submenu",
+                "summary": "Добавть подменю",
                 "description": "Добавление нового подменю.",
                 "operationId": "post_submenu_api_v1_menus__menu_id__submenus__post",
                 "parameters": [
@@ -265,6 +367,14 @@
                         "schema": {
                             "type": "string",
                             "title": "Menu Id"
+                        }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
                         }
                     }
                 ],
@@ -289,6 +399,22 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Value already exists",
+                        "content": {
+                            "application/json": {
+                                "example": "value already exists"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Menu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "menu not found"
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -307,7 +433,7 @@
                 "tags": [
                     "Подменю"
                 ],
-                "summary": "Get Submenu",
+                "summary": "Получить подменю",
                 "description": "Получение конкретного подменю.",
                 "operationId": "get_submenu_api_v1_menus__menu_id__submenus__submenu_id___get",
                 "parameters": [
@@ -328,6 +454,14 @@
                             "type": "string",
                             "title": "Submenu Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "responses": {
@@ -338,6 +472,14 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/SubmenuRead"
                                 }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Submenu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "submenu not found"
                             }
                         }
                     },
@@ -357,7 +499,7 @@
                 "tags": [
                     "Подменю"
                 ],
-                "summary": "Update Submenu",
+                "summary": "Обновить подменю",
                 "description": "Изменение подменю по id.",
                 "operationId": "update_submenu_api_v1_menus__menu_id__submenus__submenu_id___patch",
                 "parameters": [
@@ -377,6 +519,14 @@
                         "schema": {
                             "type": "string",
                             "title": "Submenu Id"
+                        }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
                         }
                     }
                 ],
@@ -401,6 +551,22 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Value already exists",
+                        "content": {
+                            "application/json": {
+                                "example": "value already exists"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Submenu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "submenu not found"
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -417,7 +583,7 @@
                 "tags": [
                     "Подменю"
                 ],
-                "summary": "Delete Submenu",
+                "summary": "Удалить подменю",
                 "description": "Удаление подменю по id.",
                 "operationId": "delete_submenu_api_v1_menus__menu_id__submenus__submenu_id___delete",
                 "parameters": [
@@ -438,6 +604,14 @@
                             "type": "string",
                             "title": "Submenu Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "responses": {
@@ -446,6 +620,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Submenu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "submenu not found"
                             }
                         }
                     },
@@ -467,7 +649,7 @@
                 "tags": [
                     "Блюда"
                 ],
-                "summary": "Get Dishes",
+                "summary": "Все блюда конкретного подменю",
                 "description": "Получение списка блюд.",
                 "operationId": "get_dishes_api_v1_menus__menu_id__submenus__submenu_id__dishes__get",
                 "parameters": [
@@ -487,6 +669,14 @@
                         "schema": {
                             "type": "string",
                             "title": "Submenu Id"
+                        }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
                         }
                     }
                 ],
@@ -521,7 +711,7 @@
                 "tags": [
                     "Блюда"
                 ],
-                "summary": "Post Dish",
+                "summary": "Добавить блюдо",
                 "description": "Добавление нового блюда.",
                 "operationId": "post_dish_api_v1_menus__menu_id__submenus__submenu_id__dishes__post",
                 "parameters": [
@@ -541,6 +731,14 @@
                         "schema": {
                             "type": "string",
                             "title": "Submenu Id"
+                        }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
                         }
                     }
                 ],
@@ -565,6 +763,22 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Value already exists",
+                        "content": {
+                            "application/json": {
+                                "example": "value already exists"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Submenu not found",
+                        "content": {
+                            "application/json": {
+                                "example": "submenu not found"
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -583,7 +797,7 @@
                 "tags": [
                     "Блюда"
                 ],
-                "summary": "Get Dish",
+                "summary": "Получить блюдо",
                 "description": "Получение конкретного блюда.",
                 "operationId": "get_dish_api_v1_menus__menu_id__submenus__submenu_id__dishes__dish_id___get",
                 "parameters": [
@@ -613,6 +827,14 @@
                             "type": "string",
                             "title": "Dish Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "responses": {
@@ -623,6 +845,14 @@
                                 "schema": {
                                     "$ref": "#/components/schemas/DishRead"
                                 }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dish not found",
+                        "content": {
+                            "application/json": {
+                                "example": "dish not found"
                             }
                         }
                     },
@@ -642,7 +872,7 @@
                 "tags": [
                     "Блюда"
                 ],
-                "summary": "Update Dish",
+                "summary": "Обновить блюдо",
                 "description": "Изменение блюда по id.",
                 "operationId": "update_dish_api_v1_menus__menu_id__submenus__submenu_id__dishes__dish_id___patch",
                 "parameters": [
@@ -672,6 +902,14 @@
                             "type": "string",
                             "title": "Dish Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "requestBody": {
@@ -695,6 +933,22 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Value already exists",
+                        "content": {
+                            "application/json": {
+                                "example": "value already exists"
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dish not found",
+                        "content": {
+                            "application/json": {
+                                "example": "dish not found"
+                            }
+                        }
+                    },
                     "422": {
                         "description": "Validation Error",
                         "content": {
@@ -711,7 +965,7 @@
                 "tags": [
                     "Блюда"
                 ],
-                "summary": "Delete Dish",
+                "summary": "Удалить блюдо",
                 "description": "Удаление блюда по id.",
                 "operationId": "delete_dish_api_v1_menus__menu_id__submenus__submenu_id__dishes__dish_id___delete",
                 "parameters": [
@@ -741,6 +995,14 @@
                             "type": "string",
                             "title": "Dish Id"
                         }
+                    },
+                    {
+                        "name": "model",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "title": "Model"
+                        }
                     }
                 ],
                 "responses": {
@@ -749,6 +1011,14 @@
                         "content": {
                             "application/json": {
                                 "schema": {}
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Dish not found",
+                        "content": {
+                            "application/json": {
+                                "example": "dish not found"
                             }
                         }
                     },
