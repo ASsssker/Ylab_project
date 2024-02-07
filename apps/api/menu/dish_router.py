@@ -15,14 +15,25 @@ from apps.menu.services.dish_service import DishService
 dish_router = APIRouter(prefix=PREFIX_LINK, tags=['Блюда'])
 
 
-@dish_router.get(DISHES_LINK, summary='Все блюда конкретного подменю', status_code=status.HTTP_200_OK, response_model=list[DishRead])
-async def get_dishes(menu_id: str, submenu_id: str, service: DishService = Depends()) -> list[dict[str, str | Decimal] | None]:
+@dish_router.get(DISHES_LINK,
+                 summary='Все блюда конкретного подменю',
+                 status_code=status.HTTP_200_OK,
+                 response_model=list[DishRead])
+async def get_dishes(menu_id: str,
+                     submenu_id: str,
+                     service: DishService = Depends()) -> list[dict[str, str | Decimal] | None]:
     """Получение списка блюд."""
     return await service.get_all(menu_id=menu_id, submenu_id=submenu_id)
 
 
-@dish_router.post(DISHES_LINK, summary='Добавить блюдо', status_code=status.HTTP_201_CREATED, response_model=DishRead, responses={**SUBMENU_NOT_FOUND, **VALUE_IS_EXIST})
-async def post_dish(menu_id: str, submenu_id: str, dish: DishCreate, service: DishService = Depends()) -> dict[str, str | Decimal]:
+@dish_router.post(DISHES_LINK,
+                  summary='Добавить блюдо',
+                  status_code=status.HTTP_201_CREATED,
+                  response_model=DishRead, responses={**SUBMENU_NOT_FOUND, **VALUE_IS_EXIST})
+async def post_dish(menu_id: str,
+                    submenu_id: str,
+                    dish: DishCreate,
+                    service: DishService = Depends()) -> dict[str, str | Decimal]:
     """Добавление нового блюда."""
     try:
         return await service.add(model_data=dish, menu_id=menu_id, submenu_id=submenu_id)
@@ -32,8 +43,15 @@ async def post_dish(menu_id: str, submenu_id: str, dish: DishCreate, service: Di
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@dish_router.get(DISH_LINK, summary='Получить блюдо', status_code=status.HTTP_200_OK, response_model=DishRead, responses=DISH_NOT_FOUND)
-async def get_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishService = Depends()) -> dict[str, str | Decimal]:
+@dish_router.get(DISH_LINK,
+                 summary='Получить блюдо',
+                 status_code=status.HTTP_200_OK,
+                 response_model=DishRead,
+                 responses=DISH_NOT_FOUND)
+async def get_dish(menu_id: str,
+                   submenu_id: str,
+                   dish_id: str,
+                   service: DishService = Depends()) -> dict[str, str | Decimal]:
     """Получение конкретного блюда."""
     try:
         return await service.get_one(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
@@ -41,8 +59,17 @@ async def get_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishSer
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@dish_router.patch(DISH_LINK, summary='Обновить блюдо', status_code=status.HTTP_200_OK, response_model=DishRead, response_model_exclude_none=True, responses={**DISH_NOT_FOUND, **VALUE_IS_EXIST})
-async def update_dish(menu_id: str, submenu_id: str, dish_id: str, updated_dish: DishUpdate, service: DishService = Depends()) -> dict[str, str | Decimal]:
+@dish_router.patch(DISH_LINK,
+                   summary='Обновить блюдо',
+                   status_code=status.HTTP_200_OK,
+                   response_model=DishRead,
+                   response_model_exclude_none=True,
+                   responses={**DISH_NOT_FOUND, **VALUE_IS_EXIST})
+async def update_dish(menu_id: str,
+                      submenu_id: str,
+                      dish_id: str,
+                      updated_dish: DishUpdate,
+                      service: DishService = Depends()) -> dict[str, str | Decimal]:
     """Изменение блюда по id."""
     try:
         return await service.update(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id, update_data=updated_dish)
@@ -52,8 +79,14 @@ async def update_dish(menu_id: str, submenu_id: str, dish_id: str, updated_dish:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=e.args[0])
 
 
-@dish_router.delete(DISH_LINK, summary='Удалить блюдо', status_code=status.HTTP_200_OK, responses=DISH_NOT_FOUND)
-async def delete_dish(menu_id: str, submenu_id: str, dish_id: str, service: DishService = Depends()) -> None:
+@dish_router.delete(DISH_LINK,
+                    summary='Удалить блюдо',
+                    status_code=status.HTTP_200_OK,
+                    responses=DISH_NOT_FOUND)
+async def delete_dish(menu_id: str,
+                      submenu_id: str,
+                      dish_id: str,
+                      service: DishService = Depends()) -> None:
     """Удаление блюда по id."""
     try:
         await service.delete(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)

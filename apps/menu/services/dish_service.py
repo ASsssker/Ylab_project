@@ -21,8 +21,18 @@ class DishService(BaseService):
     async def add(self, model_data: DishCreate, menu_id: str, submenu_id: str) -> dict[str, str | Decimal]:
         return await super().add(model_data=model_data, menu_id=menu_id, submenu_id=submenu_id)
 
-    async def update(self, menu_id: str, submenu_id: str, dish_id: str, update_data: DishUpdate) -> dict[str, str | Decimal]:
-        return await super().update(record_id=dish_id, update_data=update_data, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
+    async def update(self,
+                     menu_id: str,
+                     submenu_id: str,
+                     dish_id: str,
+                     update_data: DishUpdate) -> dict[str, str | Decimal]:
+        return await super().update(
+            record_id=dish_id,
+            update_data=update_data,
+            menu_id=menu_id,
+            submenu_id=submenu_id,
+            dish_id=dish_id
+        )
 
     async def delete(self, menu_id: str, submenu_id: str, dish_id: str) -> None:
         await super().delete(record_id=dish_id, menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)

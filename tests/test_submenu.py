@@ -26,7 +26,8 @@ async def test_post_menu(menu_post_data: dict[str, str], saved_data: dict[str, A
     assert 'submenus_count' in response_data, 'Количество подменю отсуствует в ответе'
     assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
     assert response_data['title'] == menu_post_data['title'], 'Название меню не соответствует ожидаемому'
-    assert response_data['description'] == menu_post_data['description'], 'Описание меню не соответствует ожидаемому'
+    assert response_data['description'] == \
+        menu_post_data['description'], 'Описание меню не соответствует ожидаемому'
     saved_data['menu'] = response_data
 
 
@@ -49,7 +50,8 @@ async def test_post_submenu(saved_data: dict[str, Any], submenu_post_data: dict[
     assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
     assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
     assert response_data['title'] == submenu_post_data['title'], 'Название подменю не соответствует ожидаемому'
-    assert response_data['description'] == submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
+    assert response_data['description'] == \
+        submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
     saved_data['submenu'] = response_data
 
 
@@ -75,16 +77,22 @@ async def test_get_specific_submenu(saved_data: dict[str, Any], ac: AsyncClient)
     assert response_data['description'] == submenu['description'], 'Описание подменю не соответствует ожидаемому'
 
 
-async def test_update_submenu(saved_data: dict[str, Any], submenu_patch_data: dict[str, str], ac: AsyncClient) -> None:
+async def test_update_submenu(saved_data: dict[str, Any],
+                              submenu_patch_data: dict[str, str],
+                              ac: AsyncClient) -> None:
     """Проверка обновления подменю."""
     menu, submenu = saved_data['menu'], saved_data['submenu']
-    response = await ac.patch(reverse(update_submenu, menu_id=menu['id'], submenu_id=submenu['id']), json=submenu_patch_data)
+    response = await ac.patch(
+        reverse(update_submenu, menu_id=menu['id'], submenu_id=submenu['id']),
+        json=submenu_patch_data
+    )
     assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
     response_data = response.json()
     assert 'id' in response_data, 'Идентификатор подменю отсуствует в ответе'
     assert 'title' in response_data, 'Название подменю отсуствует в ответе'
     assert response_data['title'] == submenu_patch_data['title'], 'Название подменю не соответствует ожидаемому'
-    assert response_data['description'] == submenu_patch_data['description'], 'Описание подменю не соответствует ожидаемому'
+    assert response_data['description'] == \
+        submenu_patch_data['description'], 'Описание подменю не соответствует ожидаемому'
     saved_data['submenu'] = response_data
 
 

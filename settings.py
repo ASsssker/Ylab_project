@@ -12,7 +12,9 @@ class DatabaseSettings(BaseSettings):
 
     @property
     def database_url_asyncpg(self):
-        return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
+        url = 'postgresql+asyncpg://{}:{}@{}:{}/{}'
+        return url.format(self.POSTGRES_USER, self.POSTGRES_PASSWORD, self.HOST, self.POSTGRES_PORT,
+                          self.POSTGRES_DB)
 
     @property
     def cache_url(self):
@@ -32,7 +34,9 @@ class DatabaseTestSettings(BaseSettings):
 
     @property
     def database_url_asyncpg(self):
-        return f'postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@{self.HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}'
+        url = 'postgresql+asyncpg://{}:{}@{}:{}/{}'
+        return url.format(self.POSTGRES_USER, self.POSTGRES_PASSWORD, self.HOST, self.POSTGRES_PORT,
+                          self.POSTGRES_DB)
 
     @property
     def cache_url(self):

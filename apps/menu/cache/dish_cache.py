@@ -25,14 +25,23 @@ class DishCache(CacheBaseRepository):
         url = self.endpoint_list_url.format(menu_id=menu_id, submenu_id=submenu_id)
         await self.set(item=item, url=url)
 
-    async def get_detail(self, menu_id: str, submenu_id: str, dish_id: str, *args, **kwargs) -> dict[str, str | Decimal] | None:
+    async def get_detail(self,
+                         menu_id: str,
+                         submenu_id: str,
+                         dish_id: str,
+                         *args,
+                         **kwargs) -> dict[str, str | Decimal] | None:
         url = self.endpoint_detail_url.format(menu_id=menu_id, submenu_id=submenu_id, dish_id=dish_id)
         item = await self.cacher.get(url)
         if item:
             return json.loads(item)
         return None
 
-    async def get_list(self, menu_id: str, submenu_id: str, *args, **kwargs) -> list[dict[str, str | Decimal] | None] | None:
+    async def get_list(self,
+                       menu_id: str,
+                       submenu_id: str,
+                       *args,
+                       **kwargs) -> list[dict[str, str | Decimal] | None] | None:
         url = self.endpoint_list_url.format(menu_id=menu_id, submenu_id=submenu_id)
         item = await self.cacher.get(url)
         if item:

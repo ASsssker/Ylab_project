@@ -68,7 +68,8 @@ async def test_update_menu(saved_data: dict[str, Any], menu_patch_data: dict[str
     assert 'title' in response_data, 'Название меню отсуствует в ответе'
     assert 'description' in response_data, 'Описание меню отсуствует в ответе'
     assert response_data['title'] == menu_patch_data['title'], 'Название меню не соответствует ожидаемому'
-    assert response_data['description'] == menu_patch_data['description'], 'Описание меню не соответствует ожидаемому'
+    assert response_data['description'] == \
+        menu_patch_data['description'], 'Описание меню не соответствует ожидаемому'
     saved_data['menu'] = response_data
 
 

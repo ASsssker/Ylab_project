@@ -42,7 +42,8 @@ async def test_post_submenu(submenu_post_data: dict[str, str], saved_data: dict[
     assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
     assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
     assert response_data['title'] == submenu_post_data['title'], 'Название подменю не соответствует ожидаемому'
-    assert response_data['description'] == submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
+    assert response_data['description'] == \
+        submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
     saved_data['submenu'] = response_data
 
 
@@ -65,7 +66,8 @@ async def test_post_dish(dish_post_data_1: dict[str, Any], saved_data: dict[str,
     assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
     assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
     assert response_data['title'] == dish_post_data_1['title'], 'Название блюда не соответствует ожидаемому'
-    assert response_data['description'] == dish_post_data_1['description'], 'Описание блюда не соответствует ожидаемому'
+    assert response_data['description'] == \
+        dish_post_data_1['description'], 'Описание блюда не соответствует ожидаемому'
     assert float(response_data['price']) == round(
         dish_post_data_1['price'], 2), 'Цена блюда не соответствует ожидаемому'
     saved_data['dish'] = response_data
@@ -97,7 +99,10 @@ async def test_get_specific_dish(saved_data: dict[str, Any], ac: AsyncClient) ->
 async def test_update_dish(saved_data: dict[str, Any], dish_patch_data: dict[str, Any], ac: AsyncClient) -> None:
     """Проверка обновления блюда."""
     menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
-    response = await ac.patch(reverse(update_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']), json=dish_patch_data)
+    response = await ac.patch(
+        reverse(update_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']),
+        json=dish_patch_data
+    )
     assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
     response_data = response.json()
     assert 'id' in response_data, 'Идентификатор блюда отсуствует в ответе'
@@ -105,8 +110,10 @@ async def test_update_dish(saved_data: dict[str, Any], dish_patch_data: dict[str
     assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
     assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
     assert response_data['title'] == dish_patch_data['title'], 'Название блюда не соответствует ожидаемому'
-    assert response_data['description'] == dish_patch_data['description'], 'Описание блюда не соответствует ожидаемому'
-    assert float(response_data['price']) == round(dish_patch_data['price'], 2), 'Цена блюда не соответствует ожидаемому'
+    assert response_data['description'] == \
+        dish_patch_data['description'], 'Описание блюда не соответствует ожидаемому'
+    assert float(response_data['price']) == \
+        round(dish_patch_data['price'], 2), 'Цена блюда не соответствует ожидаемому'
     saved_data['dish'] = response_data
 
 
@@ -128,7 +135,9 @@ async def test_get_updated_menu(saved_data: dict[str, Any], ac: AsyncClient) -> 
 async def test_delete_dish(saved_data: dict[str, Any], ac: AsyncClient) -> None:
     """Проверка удаления блюда."""
     menu, submenu, dish = saved_data['menu'], saved_data['submenu'], saved_data['dish']
-    response = await ac.delete(reverse(delete_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id']))
+    response = await ac.delete(
+        reverse(delete_dish, menu_id=menu['id'], submenu_id=submenu['id'], dish_id=dish['id'])
+    )
     assert response.status_code == HTTPStatus.OK, 'Статус ответа не 200'
 
 

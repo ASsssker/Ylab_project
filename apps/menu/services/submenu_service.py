@@ -20,7 +20,12 @@ class SubmenuService(BaseService):
         return await super().add(menu_id=menu_id, model_data=model_data)
 
     async def update(self, menu_id: str, submenu_id: str, update_data: SubmenuUpdate) -> dict[str, str]:
-        return await super().update(record_id=submenu_id, update_data=update_data, menu_id=menu_id, submenu_id=submenu_id)
+        return await super().update(
+            record_id=submenu_id,
+            update_data=update_data,
+            menu_id=menu_id,
+            submenu_id=submenu_id
+        )
 
     async def delete(self, menu_id: str, submenu_id: str) -> None:
         await super().delete(record_id=submenu_id, menu_id=menu_id, submenu_id=submenu_id)

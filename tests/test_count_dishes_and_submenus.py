@@ -42,7 +42,8 @@ async def test_post_submenu(saved_data: dict[str, Any], submenu_post_data: dict[
     assert 'description' in response_data, 'Описание подменю отсуствует в ответе'
     assert 'dishes_count' in response_data, 'Количество блюд отсуствует в ответе'
     assert response_data['title'] == submenu_post_data['title'], 'Название подменю не соответствует ожидаемому'
-    assert response_data['description'] == submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
+    assert response_data['description'] ==  \
+        submenu_post_data['description'], 'Описание подменю не соответствует ожидаемому'
     saved_data['submenu'] = response_data
 
 
@@ -56,7 +57,8 @@ async def test_post_dish_1(dish_post_data_1: dict[str, Any], saved_data: dict[st
     assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
     assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
     assert response_data['title'] == dish_post_data_1['title'], 'Название блюда не соответствует ожидаемому'
-    assert response_data['description'] == dish_post_data_1['description'], 'Описание блюда не соответствует ожидаемому'
+    assert response_data['description'] ==  \
+        dish_post_data_1['description'], 'Описание блюда не соответствует ожидаемому'
     assert float(response_data['price']) == round(
         dish_post_data_1['price'], 2), 'Цена блюда не соответствует ожидаемому'
     saved_data['dish_1'] = response_data
@@ -72,7 +74,8 @@ async def test_post_dish_2(dish_post_data_2: dict[str, Any], saved_data: dict[st
     assert 'description' in response_data, 'Описание блюда отсуствует в ответе'
     assert 'price' in response_data, 'Цена блюда отсуствует в ответе'
     assert response_data['title'] == dish_post_data_2['title'], 'Название блюда не соответствует ожидаемому'
-    assert response_data['description'] == dish_post_data_2['description'], 'Описание блюда не соответствует ожидаемому'
+    assert response_data['description'] ==  \
+        dish_post_data_2['description'], 'Описание блюда не соответствует ожидаемому'
     assert float(response_data['price']) == round(
         dish_post_data_2['price'], 2), 'Цена блюда не соответствует ожидаемому'
     saved_data['dish_2'] = response_data
